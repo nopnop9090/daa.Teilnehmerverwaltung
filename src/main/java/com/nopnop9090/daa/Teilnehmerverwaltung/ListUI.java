@@ -54,86 +54,75 @@ public class ListUI extends JFrame implements ActionListener {
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new BorderLayout());
 		
-		{
-			mainPanel.setLayout(new GridLayout(1, 2, 20, 0));
+		mainPanel.setLayout(new GridLayout(1, 2, 20, 0));
 
-			{
-				tnPanel.setBorder(null);
-				tnPanel.setLayout(new BorderLayout());
+		tnPanel.setBorder(null);
+		tnPanel.setLayout(new BorderLayout());
 
-				{
-					inputPanel.setBorder(new TitledBorder("Teilnehmer"));
-					inputPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+		inputPanel.setBorder(new TitledBorder("Teilnehmer"));
+		inputPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
-					{
-						labelPanel.setLayout(new GridLayout(4, 1, 0, 16));
+		labelPanel.setLayout(new GridLayout(4, 1, 0, 16));
 
-						lblTNNr.setText("TN-Nr");
-						lblTNNr.setHorizontalAlignment(SwingConstants.RIGHT);
-						labelPanel.add(lblTNNr);
+		lblTNNr.setText("TN-Nr");
+		lblTNNr.setHorizontalAlignment(SwingConstants.RIGHT);
+		labelPanel.add(lblTNNr);
 
-						lblGroup.setText("Gruppe");
-						lblGroup.setHorizontalAlignment(SwingConstants.RIGHT);
-						labelPanel.add(lblGroup);
+		lblGroup.setText("Gruppe");
+		lblGroup.setHorizontalAlignment(SwingConstants.RIGHT);
+		labelPanel.add(lblGroup);
 
-						lblSurName.setText("Name");
-						lblSurName.setHorizontalAlignment(SwingConstants.RIGHT);
-						labelPanel.add(lblSurName);
+		lblSurName.setText("Name");
+		lblSurName.setHorizontalAlignment(SwingConstants.RIGHT);
+		labelPanel.add(lblSurName);
 
-						lblFirstName.setText("Vorname");
-						lblFirstName.setHorizontalAlignment(SwingConstants.RIGHT);
-						labelPanel.add(lblFirstName);
-					}
-					inputPanel.add(labelPanel);
+		lblFirstName.setText("Vorname");
+		lblFirstName.setHorizontalAlignment(SwingConstants.RIGHT);
+		labelPanel.add(lblFirstName);
+		
+		inputPanel.add(labelPanel);
 
-					{
-						textPanel.setLayout(new GridLayout(4, 1, 0, 10));
+		textPanel.setLayout(new GridLayout(4, 1, 0, 10));
 
-						txtTNNr.setMinimumSize(new Dimension(200, 20));
-						txtTNNr.setPreferredSize(new Dimension(200, 20));
-						textPanel.add(txtTNNr);
-						textPanel.add(txtGroup);
-						textPanel.add(txtSurName);
-						textPanel.add(txtFirstName);
-					}
-					inputPanel.add(textPanel);
-				}
-				tnPanel.add(inputPanel, BorderLayout.NORTH);
+		txtTNNr.setMinimumSize(new Dimension(300, 20));
+		txtTNNr.setPreferredSize(new Dimension(300, 20));
+		textPanel.add(txtTNNr);
+		textPanel.add(txtGroup);
+		textPanel.add(txtSurName);
+		textPanel.add(txtFirstName);
 
-				{
-					buttonPanel.setLayout(new FlowLayout());
+		inputPanel.add(textPanel);
+		
+		tnPanel.add(inputPanel, BorderLayout.NORTH);
 
-					btnNew.setText("Neu");
-					btnNew.addActionListener(this);
-					buttonPanel.add(btnNew);
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		
+		btnNew.setText("Neu");
+		btnNew.addActionListener(this);
+		buttonPanel.add(btnNew);
 
-					btnChange.setText("\u00c4ndern");
-					btnChange.addActionListener(this);
-					buttonPanel.add(btnChange);
+		btnChange.setText("\u00c4ndern");
+		btnChange.addActionListener(this);
+		buttonPanel.add(btnChange);
 
-					btnDelete.setText("L\u00f6schen");
-					btnDelete.addActionListener(this);
-					buttonPanel.add(btnDelete);
+		btnDelete.setText("L\u00f6schen");
+		btnDelete.addActionListener(this);
+		buttonPanel.add(btnDelete);
 
-					btnSave.setText("Speichern");
-					btnSave.addActionListener(this);
-					buttonPanel.add(btnSave);
-				}
-				tnPanel.add(buttonPanel, BorderLayout.SOUTH);
-			}
-			mainPanel.add(tnPanel);
+		btnSave.setText("Speichern");
+		btnSave.addActionListener(this);
+		buttonPanel.add(btnSave);
 
-			{
-				listePanel.setBorder(new TitledBorder("TN-Liste"));
-				listePanel.setLayout(new BorderLayout());
+		tnPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-				{
-					scrollPane1.setViewportView(list1);
-				}
-				listePanel.add(scrollPane1, BorderLayout.CENTER);
-			}
-			mainPanel.add(listePanel);
-		}
+		mainPanel.add(tnPanel);
+
+		listePanel.setBorder(new TitledBorder("TN-Liste"));
+		listePanel.setLayout(new BorderLayout());
+
+		scrollPane1.setViewportView(list1);
+		listePanel.add(scrollPane1, BorderLayout.CENTER);
+		mainPanel.add(listePanel);
 
 		JPanel outerPanel = new JPanel();
 		outerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
