@@ -37,4 +37,9 @@ public class Teilnehmer {
 		this.setName(Name);
 		this.setVorname(Vorname);
 	}
+	
+    @Override
+    public String toString() {
+        return id + " - " + Name + ", " + Vorname;
+    }
 }

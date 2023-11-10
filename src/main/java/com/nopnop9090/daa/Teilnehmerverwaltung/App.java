@@ -1,7 +1,12 @@
 package com.nopnop9090.daa.Teilnehmerverwaltung;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -78,6 +83,69 @@ public class App
         }
     }
     
+    public static List<Teilnehmer> readTeilnehmerFromCSV(String filename) {
+        List<Teilnehmer> teilnehmerList = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+
+            // Skip the header line (assuming it's the first line)
+            reader.readLine();
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = unescapeCSV(line.split(";"));
+                int id = Integer.parseInt(parts[0].trim());
+                String gruppe = parts[1].trim();
+                String name = parts[2].trim();
+                String vorname = parts[3].trim();
+
+                Teilnehmer teilnehmer = new Teilnehmer(id, gruppe, name, vorname);
+                teilnehmerList.add(teilnehmer);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return teilnehmerList;
+    }
+
+    public static void writeTeilnehmerToCSV(String filename, List<Teilnehmer> teilnehmerList) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            // Write header row
+            writer.write("ID;Gruppe;Name;Vorname");
+            writer.newLine();
+
+            // Write Teilnehmer objects
+            for (Teilnehmer teilnehmer : teilnehmerList) {
+                writer.write(escapeCSV(teilnehmer.getId()) + ";" +
+                             escapeCSV(teilnehmer.getGruppe()) + ";" +
+                             escapeCSV(teilnehmer.getName()) + ";" +
+                             escapeCSV(teilnehmer.getVorname()));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String escapeCSV(Object value) {
+        String stringValue = value.toString();
+        if (stringValue.contains(";") || stringValue.contains("\"")) {
+            // Escape by enclosing in double quotes and double any existing double quotes
+            return "\"" + stringValue.replace("\"", "\"\"") + "\"";
+        } else {
+            return stringValue;
+        }
+    }
+
+    private static String[] unescapeCSV(String[] parts) {
+        for (int i = 0; i < parts.length; i++) {
+            // Remove enclosing double quotes and unescape any existing double quotes
+            parts[i] = parts[i].replaceAll("^\"|\"$", "").replace("\"\"", "\"");
+        }
+        return parts;
+    }
+    
     private static void waitForClose(JFrame frame) {
         while (frame.isVisible()) {
             try {
@@ -90,14 +158,24 @@ public class App
     
     public static void main( String[] args )
     {
-    	List<Teilnehmer> teilnehmerList = readTeilnehmerFromExcel("teilnehmerliste.xlsx");
+    	List<Teilnehmer> teilnehmerList = null;
     	
-/*
-    	if (teilnehmerList.size()<1) {
-    		System.out.println("leere teilnehmerliste");
-    		System.exit(0);
+    	
+//    	if(new File("teilnehmerliste.xlsx").exists()) {
+//        	teilnehmerList = readTeilnehmerFromExcel("teilnehmerliste.xlsx");
+//    	} 
+    	
+    	if(new File("teilnehmerliste.csv").exists()) {
+    		teilnehmerList = readTeilnehmerFromCSV("teilnehmerliste.csv");
     	}
-*/
+    	
+    	if(teilnehmerList == null) {
+    		System.out.println("keine teilnehmerliste geladen - erstelle beispiele..");
+        	teilnehmerList = new ArrayList<Teilnehmer>();
+        	teilnehmerList.add(new Teilnehmer(2, "Comic", "Duck", "Donald"));
+        	teilnehmerList.add(new Teilnehmer(3, "Zauberer", "Gans", "Gustav"));
+        	teilnehmerList.add(new Teilnehmer(7, "Personen", "Niko", "Klaus"));
+    	}
     	
     	for (Teilnehmer teilnehmer : teilnehmerList) {
             System.out.println(teilnehmer.getId() + ", " + teilnehmer.getGruppe() +
@@ -110,13 +188,12 @@ public class App
 		    e.printStackTrace();
 		}
 		
-		waitForClose(new ListUI());
+		waitForClose(new ListUI(teilnehmerList));
 		
     	
-    	
-        // Modify the teilnehmerList as needed...
-
-        writeTeilnehmerToExcel("teilnehmerliste.xlsx", teilnehmerList);    
+        //writeTeilnehmerToExcel("teilnehmerliste.xlsx", teilnehmerList);   
+        writeTeilnehmerToCSV("teilnehmerliste.csv", teilnehmerList);
+        
         System.out.println("Goodbye");
         
     }

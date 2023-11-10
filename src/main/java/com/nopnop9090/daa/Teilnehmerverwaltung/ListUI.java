@@ -7,8 +7,11 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,11 +22,32 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 
-public class ListUI extends JFrame implements ActionListener {
-	public ListUI() {
+public class ListUI extends JFrame implements ActionListener, ListSelectionListener {
+	public ListUI(List<Teilnehmer> teilnehmerList) {
 		initComponents();
+		this.teilnehmerList=teilnehmerList;
+		rebuildTeilnehmerJList();
+	}
+	
+	public void enableEdits(Boolean enable)
+	{
+
+//		// enable/disable text fields (different looks)
+//		txtTNNr.setFocusable(enable);
+//		txtGroup.setFocusable(enable);
+//		txtSurName.setFocusable(enable);
+//		txtFirstName.setFocusable(enable);
+	
+		
+		txtTNNr.setEditable(enable);
+		txtGroup.setEditable(enable);
+		txtSurName.setEditable(enable);
+		txtFirstName.setEditable(enable);
+		
 	}
 
 	private void initComponents() {
@@ -47,8 +71,11 @@ public class ListUI extends JFrame implements ActionListener {
 		btnSave = new JButton();
 		listePanel = new JPanel();
 		scrollPane1 = new JScrollPane();
-		list1 = new JList();
+		listModel = new DefaultListModel<Teilnehmer>();
+		teilnehmerJList = new JList<Teilnehmer>(listModel);
 
+		teilnehmerJList.addListSelectionListener(this);
+		
 		setTitle("Teilnehmerverwaltung");
 		setMinimumSize(new Dimension(690, 460));
 		setResizable(false);
@@ -91,7 +118,9 @@ public class ListUI extends JFrame implements ActionListener {
 		textPanel.add(txtGroup);
 		textPanel.add(txtSurName);
 		textPanel.add(txtFirstName);
-
+		
+		enableEdits(false);
+		
 		inputPanel.add(textPanel);
 		
 		tnPanel.add(inputPanel, BorderLayout.NORTH);
@@ -121,7 +150,7 @@ public class ListUI extends JFrame implements ActionListener {
 		listePanel.setBorder(new TitledBorder("TN-Liste"));
 		listePanel.setLayout(new BorderLayout());
 
-		scrollPane1.setViewportView(list1);
+		scrollPane1.setViewportView(teilnehmerJList);
 		scrollPane1.setBorder(null);
 		
 		listePanel.add(scrollPane1, BorderLayout.CENTER);
@@ -133,11 +162,13 @@ public class ListUI extends JFrame implements ActionListener {
 		outerPanel.add(mainPanel, BorderLayout.CENTER);
 		
 		contentPane.add(outerPanel, BorderLayout.CENTER);
-		pack();
+		this.pack();
+		
 		setLocationRelativeTo(getOwner());
 		setVisible(true);
 	}
 
+	private List<Teilnehmer> teilnehmerList;
 	private JPanel mainPanel;
 	private JPanel tnPanel;
 	private JPanel inputPanel;
@@ -158,7 +189,15 @@ public class ListUI extends JFrame implements ActionListener {
 	private JButton btnSave;
 	private JPanel listePanel;
 	private JScrollPane scrollPane1;
-	private JList list1;
+	private JList<Teilnehmer> teilnehmerJList;
+	private DefaultListModel<Teilnehmer> listModel;
+	
+	void rebuildTeilnehmerJList() {
+		listModel.clear();
+		for (Teilnehmer teilnehmer : teilnehmerList) {
+			listModel.addElement(teilnehmer);
+		}
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
@@ -171,7 +210,30 @@ public class ListUI extends JFrame implements ActionListener {
 		    e.printStackTrace();
 		}
 		
-		new ListUI();
+    	List<Teilnehmer> teilnehmerList = new ArrayList<Teilnehmer>();
+    	teilnehmerList.add(new Teilnehmer(2, "Comic", "Duck", "Donald"));
+    	teilnehmerList.add(new Teilnehmer(3, "Zauberer", "Gans", "Gustav"));
+    	teilnehmerList.add(new Teilnehmer(7, "Personen", "Niko", "Klaus"));
+
+		new ListUI(teilnehmerList);
 		
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+        if (!e.getValueIsAdjusting()) {
+            // Get the selected value
+            Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
+            if (selectedTeilnehmer != null) {
+                // Access the internal ID
+                int selectedId = selectedTeilnehmer.getId();
+                System.out.println("Selected ID: " + selectedId);
+                txtTNNr.setText("" + selectedTeilnehmer.getId());
+                txtFirstName.setText("" + selectedTeilnehmer.getVorname());
+                txtSurName.setText("" + selectedTeilnehmer.getName());
+                txtGroup.setText("" + selectedTeilnehmer.getGruppe());
+                
+            }
+        }
 	}
 }
