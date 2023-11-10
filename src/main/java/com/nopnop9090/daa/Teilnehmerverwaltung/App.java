@@ -79,7 +79,14 @@ public class App
     {
     	List<Teilnehmer> teilnehmerList = readTeilnehmerFromExcel("teilnehmerliste.xlsx");
     	
-        for (Teilnehmer teilnehmer : teilnehmerList) {
+/*
+    	if (teilnehmerList.size()<1) {
+    		System.out.println("leere teilnehmerliste");
+    		System.exit(0);
+    	}
+*/
+    	
+    	for (Teilnehmer teilnehmer : teilnehmerList) {
             System.out.println(teilnehmer.getId() + ", " + teilnehmer.getGruppe() +
                     ", " + teilnehmer.getName() + ", " + teilnehmer.getVorname());
         }
