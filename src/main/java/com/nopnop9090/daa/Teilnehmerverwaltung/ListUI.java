@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
 
@@ -121,6 +122,8 @@ public class ListUI extends JFrame implements ActionListener {
 		listePanel.setLayout(new BorderLayout());
 
 		scrollPane1.setViewportView(list1);
+		scrollPane1.setBorder(null);
+		
 		listePanel.add(scrollPane1, BorderLayout.CENTER);
 		mainPanel.add(listePanel);
 
@@ -162,6 +165,12 @@ public class ListUI extends JFrame implements ActionListener {
 	}
 	
 	public static void main(String[] args) {
+		try { 
+		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		
 		new ListUI();
 		
 	}

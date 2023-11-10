@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -75,6 +78,16 @@ public class App
         }
     }
     
+    private static void waitForClose(JFrame frame) {
+        while (frame.isVisible()) {
+            try {
+                Thread.sleep(100); // Sleep for a short interval
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     public static void main( String[] args )
     {
     	List<Teilnehmer> teilnehmerList = readTeilnehmerFromExcel("teilnehmerliste.xlsx");
@@ -91,8 +104,20 @@ public class App
                     ", " + teilnehmer.getName() + ", " + teilnehmer.getVorname());
         }
 
+		try { 
+		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		
+		waitForClose(new ListUI());
+		
+    	
+    	
         // Modify the teilnehmerList as needed...
 
         writeTeilnehmerToExcel("teilnehmerliste.xlsx", teilnehmerList);    
+        System.out.println("Goodbye");
+        
     }
 }
