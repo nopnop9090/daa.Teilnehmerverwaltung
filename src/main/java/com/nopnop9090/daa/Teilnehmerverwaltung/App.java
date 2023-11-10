@@ -80,6 +80,7 @@ public class App
     public static void main( String[] args )
     {
     	List<Teilnehmer> teilnehmerList = readTeilnehmerFromExcel();
+    	
         for (Teilnehmer teilnehmer : teilnehmerList) {
             System.out.println(teilnehmer.getId() + ", " + teilnehmer.getGruppe() +
                     ", " + teilnehmer.getName() + ", " + teilnehmer.getVorname());
