@@ -12,12 +12,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class App 
 {
-    private static final String EXCEL_FILE_PATH = "c:/users/pc/downloads/test.xlsx";
-
-    public static List<Teilnehmer> readTeilnehmerFromExcel() {
+    public static List<Teilnehmer> readTeilnehmerFromExcel(String Filename) {
         List<Teilnehmer> teilnehmerList = new ArrayList<>();
 
-        try (FileInputStream fileInputStream = new FileInputStream(EXCEL_FILE_PATH)) {
+        try (FileInputStream fileInputStream = new FileInputStream(Filename)) {
             Workbook workbook = new XSSFWorkbook(fileInputStream);
             Sheet sheet = workbook.getSheetAt(0); // Assuming the data is in the first sheet
 
@@ -47,8 +45,8 @@ public class App
         return teilnehmerList;
     }
 
-    public static void writeTeilnehmerToExcel(List<Teilnehmer> teilnehmerList) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(EXCEL_FILE_PATH)) {
+    public static void writeTeilnehmerToExcel(String Filename, List<Teilnehmer> teilnehmerList) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(Filename)) {
 
             Workbook workbook = new XSSFWorkbook();
             Sheet sheet = workbook.createSheet("Teilnehmer"); 
@@ -79,7 +77,7 @@ public class App
     
     public static void main( String[] args )
     {
-    	List<Teilnehmer> teilnehmerList = readTeilnehmerFromExcel();
+    	List<Teilnehmer> teilnehmerList = readTeilnehmerFromExcel("teilnehmerliste.xlsx");
     	
         for (Teilnehmer teilnehmer : teilnehmerList) {
             System.out.println(teilnehmer.getId() + ", " + teilnehmer.getGruppe() +
@@ -88,5 +86,6 @@ public class App
 
         // Modify the teilnehmerList as needed...
 
-        writeTeilnehmerToExcel(teilnehmerList);    }
+        writeTeilnehmerToExcel("teilnehmerliste.xlsx", teilnehmerList);    
+    }
 }
