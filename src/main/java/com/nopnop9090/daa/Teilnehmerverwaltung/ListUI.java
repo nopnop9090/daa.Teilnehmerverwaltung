@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -16,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -28,9 +30,13 @@ import javax.swing.event.ListSelectionListener;
 
 public class ListUI extends JFrame implements ActionListener, ListSelectionListener {
 	public ListUI(List<Teilnehmer> teilnehmerList) {
+		this.editMode = 0;
+		this.lastSelected = 0;
+		
 		initComponents();
 		this.teilnehmerList=teilnehmerList;
 		rebuildTeilnehmerJList();
+		teilnehmerJList.setSelectedIndex(0);
 	}
 	
 	public void enableEdits(Boolean enable)
@@ -42,8 +48,8 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 //		txtSurName.setFocusable(enable);
 //		txtFirstName.setFocusable(enable);
 	
-		
-		txtTNNr.setEditable(enable);
+		if(this.editMode!=2)
+			txtTNNr.setEditable(enable);
 		txtGroup.setEditable(enable);
 		txtSurName.setEditable(enable);
 		txtFirstName.setEditable(enable);
@@ -69,6 +75,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		btnChange = new JButton();
 		btnDelete = new JButton();
 		btnSave = new JButton();
+		btnAbort = new JButton();
 		listePanel = new JPanel();
 		scrollPane1 = new JScrollPane();
 		listModel = new DefaultListModel<Teilnehmer>();
@@ -133,16 +140,25 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 
 		btnChange.setText("\u00c4ndern");
 		btnChange.addActionListener(this);
+		btnAbort.setVisible(false);
 		buttonPanel.add(btnChange);
 
 		btnDelete.setText("L\u00f6schen");
 		btnDelete.addActionListener(this);
+		btnAbort.setVisible(false);
 		buttonPanel.add(btnDelete);
 
 		btnSave.setText("Speichern");
 		btnSave.addActionListener(this);
 		buttonPanel.add(btnSave);
+		btnSave.setVisible(false);
+		
+		btnAbort.setText("Abbruch");
+		btnAbort.addActionListener(this);
+		btnAbort.setVisible(false);
+		buttonPanel.add(btnAbort);
 
+		
 		tnPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		mainPanel.add(tnPanel);
@@ -168,6 +184,8 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		setVisible(true);
 	}
 
+	private int editMode;
+	private int lastSelected;
 	private List<Teilnehmer> teilnehmerList;
 	private JPanel mainPanel;
 	private JPanel tnPanel;
@@ -187,6 +205,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 	private JButton btnChange;
 	private JButton btnDelete;
 	private JButton btnSave;
+	private JButton btnAbort;
 	private JPanel listePanel;
 	private JScrollPane scrollPane1;
 	private JList<Teilnehmer> teilnehmerJList;
@@ -197,10 +216,127 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		for (Teilnehmer teilnehmer : teilnehmerList) {
 			listModel.addElement(teilnehmer);
 		}
+		Boolean allowEditDelete = (listModel.size()>0);
+		btnChange.setVisible(allowEditDelete);
+		btnDelete.setVisible(allowEditDelete);
+		
+	}
+
+	public void switchEditMode() {
+		if(btnSave.isVisible()) {
+			btnNew.setVisible(true);
+			
+			btnSave.setVisible(false);
+			btnAbort.setVisible(false);
+			
+			teilnehmerJList.setEnabled(true);
+			rebuildTeilnehmerJList();
+
+			enableEdits(false);
+			
+			teilnehmerJList.setSelectedIndex(this.lastSelected);
+			
+		} else {
+			this.lastSelected=0;
+			
+			if(this.editMode>1)
+				this.lastSelected = teilnehmerJList.getSelectedIndex();
+			
+			
+			btnNew.setVisible(false);
+			
+			btnChange.setVisible(false);
+			btnDelete.setVisible(false);
+			
+			btnSave.setVisible(true);
+			btnAbort.setVisible(true);
+			
+			teilnehmerJList.setEnabled(false);
+
+			enableEdits(true);
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
+		if(e.getActionCommand().equalsIgnoreCase("neu")) {
+			this.editMode = 1;
+			switchEditMode();
+
+			int newTNNr=1;
+			for (Teilnehmer teilnehmer : teilnehmerList) {
+				int tmp = teilnehmer.getId();
+				if(tmp>newTNNr)
+					newTNNr=tmp+1;
+			}
+			
+			
+			txtTNNr.setText("" + newTNNr);
+			txtGroup.setText("");
+			txtFirstName.setText("");
+			txtSurName.setText("");
+		}else if(e.getActionCommand().equalsIgnoreCase("ändern")) {
+			this.editMode = 2;
+			switchEditMode();
+		}else if(e.getActionCommand().equalsIgnoreCase("löschen")) {
+			// "are you sure?"
+			if(teilnehmerJList.getSelectedIndex()>=0) {	// make sure something is actually selected (the button should not be visible otherwise but who knows..)
+				if(JOptionPane.showConfirmDialog(null, "Soll der gewählte Eintrag wirklich gelöscht werden?", "Achtung", JOptionPane.YES_NO_OPTION)==0) {
+					Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
+					teilnehmerList.remove(selectedTeilnehmer);
+					txtTNNr.setText("");
+					txtGroup.setText("");
+					txtFirstName.setText("");
+					txtSurName.setText("");
+					rebuildTeilnehmerJList();
+					teilnehmerJList.setSelectedIndex(0);
+					// yes, delete
+				}
+			}
+		}else if(e.getActionCommand().equalsIgnoreCase("speichern")) {
+			try {
+				Boolean skipSaving = false;
+
+				if(txtGroup.getText().length()<1 || txtFirstName.getText().length()<1 || txtSurName.getText().length()<1) {
+					skipSaving = true;
+					JOptionPane.showMessageDialog(null, "Alle Felder müssen ausgefüllt sein", "Fehler", JOptionPane.WARNING_MESSAGE);
+					// missing fields? alert the user and abort saving  
+				}
+					
+				if(this.editMode!=2 && !skipSaving) {
+					int newTNNr = Integer.parseInt(txtTNNr.getText());
+					for (Teilnehmer teilnehmer : teilnehmerList) {
+						if(newTNNr == teilnehmer.getId()) {
+							// already exisiting id? alert the user and abort saving 
+							JOptionPane.showMessageDialog(null, "Teilnehmernummer bereits vorhanden", "Fehler", JOptionPane.WARNING_MESSAGE);
+							skipSaving = true;
+							break;
+						}
+					}
+				}
+				if(!skipSaving) {
+					if(this.editMode==2)
+						teilnehmerList.remove(teilnehmerJList.getSelectedValue());
+					
+					int newTNNr = Integer.parseInt(txtTNNr.getText());
+					teilnehmerList.add(new Teilnehmer(Integer.parseInt(txtTNNr.getText()), txtGroup.getText(), txtSurName.getText(), txtFirstName.getText()));
+					rebuildTeilnehmerJList();
+					this.editMode = 0;
+					switchEditMode();
+					//teilnehmerJList.setSelectedIndex(0);
+				}
+			} catch( NumberFormatException ex ) {
+				JOptionPane.showMessageDialog(null, "Teilnehmernummer muss numerisch sein", "Fehler", JOptionPane.WARNING_MESSAGE);
+				// didnt work, alert the user ..
+			}
+		}else if(e.getActionCommand().equalsIgnoreCase("abbruch")) {
+			this.editMode = 0;
+			txtTNNr.setText("");
+			txtGroup.setText("");
+			txtFirstName.setText("");
+			txtSurName.setText("");
+			switchEditMode();
+		}
 	}
 	
 	public static void main(String[] args) {
