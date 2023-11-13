@@ -7,7 +7,7 @@
   <groupId>com.nopnop9090</groupId>
   <artifactId>daa.Teilnehmerverwaltung</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-
+  
   <name>daa.Teilnehmerverwaltung</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
@@ -61,6 +61,17 @@
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.0.2</version>
+<configuration>
+        <archive>
+          <manifest>
+			  <addClasspath>true</addClasspath>
+			   <classpathPrefix>lib/</classpathPrefix>
+			   <mainClass>com.nopnop9090.daa.Teilnehmerverwaltung.App</mainClass>
+		</manifest>
+        </archive>
+        </configuration>
+			            
+
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
@@ -81,5 +92,70 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+<plugins>
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-shade-plugin</artifactId>
+    <version>3.5.1</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>shade</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <shadedArtifactAttached>true</shadedArtifactAttached> <!-- Make the shaded artifact not the main one -->
+        <shadedClassifierName>shaded</shadedClassifierName> <!-- set the suffix to the shaded jar -->
+    </configuration>
+</plugin>
+
+<plugin>
+            <groupId>com.akathist.maven.plugins.launch4j</groupId>
+            <artifactId>launch4j-maven-plugin</artifactId>
+            <version>2.4.1</version>
+            <executions>
+                <execution>
+                    <id>l4j-clui</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>launch4j</goal>
+                    </goals>
+                    <configuration>
+                        <headerType>gui</headerType>
+                        <outfile>target/app-gui.exe</outfile>
+                        <jar>target/${project.artifactId}-${project.version}-shaded.jar</jar>
+                        <errTitle>App Err</errTitle>
+                        <classPath>
+                            <mainClass>com.nopnop9090.daa.Teilnehmerverwaltung.App</mainClass>
+                        </classPath>
+                        <jre>
+						    <requiresJdk>false</requiresJdk>
+						    <requires64Bit>false</requires64Bit>
+							<path>%JAVA_HOME%;%PATH%</path>
+                            <minVersion>1.6.0</minVersion>
+                            <initialHeapSize>128</initialHeapSize>
+                            <maxHeapSize>1024</maxHeapSize>
+                        </jre>
+                        <versionInfo>
+                            <fileVersion>1.0.0.0</fileVersion>
+                            <txtFileVersion>1.0.0.0</txtFileVersion>
+                            <fileDescription>Desc</fileDescription>
+                            <copyright>(C) 2023 dr.nop</copyright>
+                            <productVersion>1.0.0.0</productVersion>
+                            <txtProductVersion>1.0.0.0</txtProductVersion>
+                            <productName>Product</productName>
+                            <internalName>Product</internalName>
+                            <originalFilename>App.exe</originalFilename>
+                        </versionInfo>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    
+        	
+</plugins>            
   </build>
 </project>
