@@ -27,7 +27,12 @@ import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
+import javax.swing.*;
 
 public class ListUI extends JFrame implements ActionListener, ListSelectionListener {
 	public ListUI(List<Teilnehmer> teilnehmerList) {
@@ -122,7 +127,9 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 
 		txtTNNr.setMinimumSize(new Dimension(300, 20));
 		txtTNNr.setPreferredSize(new Dimension(300, 20));
+		((AbstractDocument) txtTNNr.getDocument()).setDocumentFilter(new NumericFilter());
 		textPanel.add(txtTNNr);
+
 		textPanel.add(txtGroup);
 		textPanel.add(txtSurName);
 		textPanel.add(txtFirstName);
