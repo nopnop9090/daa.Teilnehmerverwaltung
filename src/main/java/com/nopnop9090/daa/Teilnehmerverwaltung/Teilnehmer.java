@@ -40,6 +40,6 @@ public class Teilnehmer {
 	
     @Override
     public String toString() {
-        return id + " - " + Name + ", " + Vorname;
+        return id + " - " + Name + ", " + Vorname + " (" + Gruppe + ")";
     }
 }

@@ -121,6 +121,7 @@ public class App
                              escapeCSV(teilnehmer.getGruppe()) + ";" +
                              escapeCSV(teilnehmer.getName()) + ";" +
                              escapeCSV(teilnehmer.getVorname()));
+                //System.out.println(teilnehmer.getId() + " written");
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -172,9 +173,15 @@ public class App
     	if(teilnehmerList == null) {
     		System.out.println("keine teilnehmerliste geladen - erstelle beispiele..");
         	teilnehmerList = new ArrayList<Teilnehmer>();
-        	teilnehmerList.add(new Teilnehmer(2, "Comic", "Duck", "Donald"));
-        	teilnehmerList.add(new Teilnehmer(3, "Zauberer", "Gans", "Gustav"));
-        	teilnehmerList.add(new Teilnehmer(7, "Personen", "Niko", "Klaus"));
+        	teilnehmerList.add(new Teilnehmer(1,"Comic","Maus","Minni"));
+        	teilnehmerList.add(new Teilnehmer(2,"Comic","Duck","Donald"));
+        	teilnehmerList.add(new Teilnehmer(3,"Zauberer","Gans","Gustav"));
+        	teilnehmerList.add(new Teilnehmer(4,"Zauberer","Dumbledore","Albus"));
+        	teilnehmerList.add(new Teilnehmer(5,"Zauberer","Potter","Harry"));
+        	teilnehmerList.add(new Teilnehmer(6,"Comic","Maus","Micky"));
+        	teilnehmerList.add(new Teilnehmer(7,"Personen","Niko","Klaus"));
+        	teilnehmerList.add(new Teilnehmer(8,"Personen","Christ","Kind"));
+        	teilnehmerList.add(new Teilnehmer(9,"Moderator","Meiser","Hans"));
     	}
     	
     	for (Teilnehmer teilnehmer : teilnehmerList) {

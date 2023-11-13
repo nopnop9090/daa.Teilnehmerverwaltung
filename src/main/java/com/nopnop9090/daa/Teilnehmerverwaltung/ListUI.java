@@ -56,7 +56,8 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 	
 		if(this.editMode!=2)
 			txtTNNr.setEditable(enable);
-		txtGroup.setEditable(enable);
+		//txtGroup.setEditable(enable);
+		cmbGroup.setEnabled(enable);
 		txtSurName.setEditable(enable);
 		txtFirstName.setEditable(enable);
 		
@@ -69,11 +70,15 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		labelPanel = new JPanel();
 		lblTNNr = new JLabel();
 		lblGroup = new JLabel();
+		
 		lblSurName = new JLabel();
 		lblFirstName = new JLabel();
 		textPanel = new JPanel();
 		txtTNNr = new JTextField();
-		txtGroup = new JTextField();
+		//txtGroup = new JTextField();
+		cmbGroup = new JComboBox<>();
+		cmbGroup.setEditable(true);
+
 		txtSurName = new JTextField();
 		txtFirstName = new JTextField();
 		buttonPanel = new JPanel();
@@ -130,7 +135,9 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		((AbstractDocument) txtTNNr.getDocument()).setDocumentFilter(new NumericFilter());
 		textPanel.add(txtTNNr);
 
-		textPanel.add(txtGroup);
+		
+		//textPanel.add(txtGroup);
+		textPanel.add(cmbGroup);
 		textPanel.add(txtSurName);
 		textPanel.add(txtFirstName);
 		
@@ -206,6 +213,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 	private JPanel textPanel;
 	private JTextField txtTNNr;
 	private JTextField txtGroup;
+	private JComboBox<String> cmbGroup;
 	private JTextField txtSurName;
 	private JTextField txtFirstName;
 	private JPanel buttonPanel;
@@ -223,8 +231,14 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		resortTNList();
 		
 		listModel.clear();
+		cmbGroup.removeAllItems();
+		
 		for (Teilnehmer teilnehmer : teilnehmerList) {
 			listModel.addElement(teilnehmer);
+			String group = teilnehmer.getGruppe();
+			if (isGroupInComboBox(group)==-1) {
+				cmbGroup.addItem(group);
+			}
 		}
 		Boolean allowEditDelete = (listModel.size()>0);
 		btnChange.setVisible(allowEditDelete);
@@ -232,6 +246,15 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		
 	}
 
+	private int isGroupInComboBox(String group) {
+	    for (int i = 0; i < cmbGroup.getItemCount(); i++) {
+	        if (group.equals(cmbGroup.getItemAt(i))) {
+	            return i;
+	        }
+	    }
+	    return -1;
+	}
+	
 	public void switchEditMode() {
 		if(btnSave.isVisible()) {
 			btnNew.setVisible(true);
@@ -292,7 +315,8 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 			
 			
 			txtTNNr.setText("" + newTNNr);
-			txtGroup.setText("");
+			//txtGroup.setText("");
+			cmbGroup.setSelectedItem("");
 			txtFirstName.setText("");
 			txtSurName.setText("");
 		}else if(e.getActionCommand().equalsIgnoreCase("ändern")) {
@@ -317,7 +341,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 			try {
 				Boolean skipSaving = false;
 
-				if(txtGroup.getText().length()<1 || txtFirstName.getText().length()<1 || txtSurName.getText().length()<1) {
+				if(((String)cmbGroup.getSelectedItem()).length()<1 || txtFirstName.getText().length()<1 || txtSurName.getText().length()<1) {
 					skipSaving = true;
 					JOptionPane.showMessageDialog(null, "Alle Felder müssen ausgefüllt sein", "Fehler", JOptionPane.WARNING_MESSAGE);
 					// missing fields? alert the user and abort saving  
@@ -339,7 +363,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 						teilnehmerList.remove(teilnehmerJList.getSelectedValue());
 					
 					int newTNNr = Integer.parseInt(txtTNNr.getText());
-					teilnehmerList.add(new Teilnehmer(Integer.parseInt(txtTNNr.getText()), txtGroup.getText(), txtSurName.getText(), txtFirstName.getText()));
+					teilnehmerList.add(new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText()));
 					rebuildTeilnehmerJList();
 					this.editMode = 0;
 					switchEditMode();
@@ -352,7 +376,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		}else if(e.getActionCommand().equalsIgnoreCase("abbruch")) {
 			this.editMode = 0;
 			txtTNNr.setText("");
-			txtGroup.setText("");
+			cmbGroup.setSelectedIndex(-1);
 			txtFirstName.setText("");
 			txtSurName.setText("");
 			switchEditMode();
@@ -387,7 +411,8 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
                 txtTNNr.setText("" + selectedTeilnehmer.getId());
                 txtFirstName.setText("" + selectedTeilnehmer.getVorname());
                 txtSurName.setText("" + selectedTeilnehmer.getName());
-                txtGroup.setText("" + selectedTeilnehmer.getGruppe());
+                cmbGroup.setSelectedIndex(isGroupInComboBox(selectedTeilnehmer.getGruppe()));
+                //txtGroup.setText("" + selectedTeilnehmer.getGruppe());
                 
             }
         }
