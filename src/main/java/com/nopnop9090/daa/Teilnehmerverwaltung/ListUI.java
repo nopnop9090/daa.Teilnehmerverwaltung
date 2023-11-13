@@ -329,7 +329,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 					Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
 					teilnehmerList.remove(selectedTeilnehmer);
 					txtTNNr.setText("");
-					txtGroup.setText("");
+					cmbGroup.setSelectedIndex(-1);
 					txtFirstName.setText("");
 					txtSurName.setText("");
 					rebuildTeilnehmerJList();
@@ -383,7 +383,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		}
 	}
 
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		try { 
 		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
@@ -398,7 +398,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		new ListUI(teilnehmerList);
 		
 	}
-
+*/
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) {
