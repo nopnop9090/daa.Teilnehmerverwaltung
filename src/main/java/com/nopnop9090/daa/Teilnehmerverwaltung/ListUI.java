@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -212,6 +213,8 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 	private DefaultListModel<Teilnehmer> listModel;
 	
 	void rebuildTeilnehmerJList() {
+		resortTNList();
+		
 		listModel.clear();
 		for (Teilnehmer teilnehmer : teilnehmerList) {
 			listModel.addElement(teilnehmer);
@@ -257,6 +260,14 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 		}
 	}
 
+	public void resortTNList() {
+    	Collections.sort(teilnehmerList, new Comparator<Teilnehmer>() {
+			@Override
+			public int compare(Teilnehmer t1, Teilnehmer t2) {
+				return Integer.compare(t1.getId(), t2.getId());
+			}
+		});
+	}
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
 		if(e.getActionCommand().equalsIgnoreCase("neu")) {
@@ -264,9 +275,11 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 			switchEditMode();
 
 			int newTNNr=1;
+			resortTNList();
+
 			for (Teilnehmer teilnehmer : teilnehmerList) {
 				int tmp = teilnehmer.getId();
-				if(tmp>newTNNr)
+				if(tmp>=newTNNr)
 					newTNNr=tmp+1;
 			}
 			
@@ -338,7 +351,7 @@ public class ListUI extends JFrame implements ActionListener, ListSelectionListe
 			switchEditMode();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		try { 
 		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
