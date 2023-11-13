@@ -195,6 +195,7 @@ public class App
         writeTeilnehmerToCSV("teilnehmerliste.csv", teilnehmerList);
         
         System.out.println("Goodbye");
+        System.exit(0);
         
     }
 }
