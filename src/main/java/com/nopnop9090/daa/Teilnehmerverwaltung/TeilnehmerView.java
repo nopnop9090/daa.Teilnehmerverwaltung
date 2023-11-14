@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -284,7 +283,13 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		}
 	}
 
+	public void clearFields() {
+		txtTNNr.setText("");
+		cmbGroup.setSelectedIndex(-1);
+		txtFirstName.setText("");
+		txtSurName.setText("");
 
+	}
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
 		if(e.getActionCommand().equalsIgnoreCase("neu")) {
@@ -315,10 +320,9 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				if(JOptionPane.showConfirmDialog(null, "Soll der gewählte Eintrag wirklich gelöscht werden?", "Achtung", JOptionPane.YES_NO_OPTION)==0) {
 					Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
 					teilnehmerList.remove(selectedTeilnehmer);
-					txtTNNr.setText("");
-					cmbGroup.setSelectedIndex(-1);
-					txtFirstName.setText("");
-					txtSurName.setText("");
+
+					clearFields();
+					
 					rebuildTeilnehmerJList();
 					teilnehmerJList.setSelectedIndex(0);
 					// yes, delete
@@ -362,10 +366,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 			}
 		}else if(e.getActionCommand().equalsIgnoreCase("abbruch")) {
 			this.editMode = 0;
-			txtTNNr.setText("");
-			cmbGroup.setSelectedIndex(-1);
-			txtFirstName.setText("");
-			txtSurName.setText("");
+			clearFields();
 			switchEditMode();
 		}
 	}
