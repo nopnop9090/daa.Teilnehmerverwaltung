@@ -351,16 +351,17 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 					}
 				}
 				if(!skipSaving) {
-					if(this.editMode==2)
+					if(this.editMode==2) // edit = remove + readd
 						teilnehmerList.remove(teilnehmerJList.getSelectedValue());
 					
 					int newTNNr = Integer.parseInt(txtTNNr.getText());
-					teilnehmerModel.addTeilnehmer(new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText()));
+					Teilnehmer newtn = new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText());
+					teilnehmerModel.addTeilnehmer(newtn);
 					rebuildTeilnehmerJList();
 					this.editMode = 0;
 					switchEditMode();
 					
-					setFields(teilnehmerJList.getSelectedValue());
+					setFields(newtn);
 					
 					//teilnehmerJList.setSelectedIndex(0);
 				}
