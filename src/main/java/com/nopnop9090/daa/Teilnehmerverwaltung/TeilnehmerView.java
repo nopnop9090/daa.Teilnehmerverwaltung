@@ -261,7 +261,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 
 			enableEdits(false);
 			
-			teilnehmerJList.setSelectedIndex(-1);
 			teilnehmerJList.setSelectedIndex(this.lastSelected);
 			
 		} else {
@@ -287,7 +286,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 
 	public void clearFields() {
 		txtTNNr.setText("");
-		cmbGroup.setSelectedIndex(-1);
+		cmbGroup.setSelectedItem("");
 		txtFirstName.setText("");
 		txtSurName.setText("");
 
@@ -356,10 +355,13 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 						teilnehmerList.remove(teilnehmerJList.getSelectedValue());
 					
 					int newTNNr = Integer.parseInt(txtTNNr.getText());
-					teilnehmerList.add(new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText()));
+					teilnehmerModel.addTeilnehmer(new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText()));
 					rebuildTeilnehmerJList();
 					this.editMode = 0;
 					switchEditMode();
+					
+					setFields(teilnehmerJList.getSelectedValue());
+					
 					//teilnehmerJList.setSelectedIndex(0);
 				}
 			} catch( NumberFormatException ex ) {
@@ -367,30 +369,31 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				// didnt work, alert the user ..
 			}
 		}else if(e.getActionCommand().equalsIgnoreCase("abbruch")) {
-			clearFields();
-			switchEditMode();
 			this.editMode = 0;
+			switchEditMode();
+			setFields(teilnehmerJList.getSelectedValue());
 		}
 	}
 
+	public void setFields(Teilnehmer tn) {
+        if (tn != null) {
+            // Access the internal ID
+            int selectedId = tn.getId();
+            txtTNNr.setText("" + tn.getId());
+            txtFirstName.setText("" + tn.getVorname());
+            txtSurName.setText("" + tn.getName());
+            cmbGroup.setSelectedIndex(isGroupInComboBox(tn.getGruppe()));
+        }
+	}
+	
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		
         if (!e.getValueIsAdjusting()) {
     		System.out.println("listselection");
             // Get the selected value
-            Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
-            if (selectedTeilnehmer != null) {
-                // Access the internal ID
-                int selectedId = selectedTeilnehmer.getId();
-                System.out.println("Selected ID: " + selectedId);
-                txtTNNr.setText("" + selectedTeilnehmer.getId());
-                txtFirstName.setText("" + selectedTeilnehmer.getVorname());
-                txtSurName.setText("" + selectedTeilnehmer.getName());
-                cmbGroup.setSelectedIndex(isGroupInComboBox(selectedTeilnehmer.getGruppe()));
-                //txtGroup.setText("" + selectedTeilnehmer.getGruppe());
-                
-            }
+    		this.lastSelected = teilnehmerJList.getSelectedIndex();
+    		setFields(teilnehmerJList.getSelectedValue());
         }
 	}
 }
