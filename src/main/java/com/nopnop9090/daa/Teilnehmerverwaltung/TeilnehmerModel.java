@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,6 +33,15 @@ public class TeilnehmerModel {
         teilnehmerList.add(teilnehmer);
     }
     
+	public void sortById() {
+    	Collections.sort(teilnehmerList, new Comparator<Teilnehmer>() {
+			@Override
+			public int compare(Teilnehmer t1, Teilnehmer t2) {
+				return Integer.compare(t1.getId(), t2.getId());
+			}
+		});
+	}
+	
     public void readFromCSV(String filename) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;

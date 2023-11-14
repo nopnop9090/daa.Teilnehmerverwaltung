@@ -7,9 +7,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -23,24 +20,22 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.DocumentFilter;
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class TeilnehmerView extends JFrame implements ActionListener, ListSelectionListener {
 	public TeilnehmerView(TeilnehmerModel model) {
 		this.editMode = 0;
 		this.lastSelected = 0;
 		
 		initComponents();
+		this.teilnehmerModel=model;
 		this.teilnehmerList=model.getTeilnehmerList();
+		
 		rebuildTeilnehmerJList();
 		teilnehmerJList.setSelectedIndex(0);
 	}
@@ -201,6 +196,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 
 	private int editMode;
 	private int lastSelected;
+	private TeilnehmerModel teilnehmerModel;
 	private List<Teilnehmer> teilnehmerList;
 	private JPanel mainPanel;
 	private JPanel tnPanel;
@@ -228,7 +224,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	private DefaultListModel<Teilnehmer> listModel;
 	
 	void rebuildTeilnehmerJList() {
-		resortTNList();
+		teilnehmerModel.sortById();
 		
 		listModel.clear();
 		cmbGroup.removeAllItems();
@@ -290,14 +286,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		}
 	}
 
-	public void resortTNList() {
-    	Collections.sort(teilnehmerList, new Comparator<Teilnehmer>() {
-			@Override
-			public int compare(Teilnehmer t1, Teilnehmer t2) {
-				return Integer.compare(t1.getId(), t2.getId());
-			}
-		});
-	}
+
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
 		if(e.getActionCommand().equalsIgnoreCase("neu")) {
@@ -305,7 +294,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 			switchEditMode();
 
 			int newTNNr=1;
-			resortTNList();
+			teilnehmerModel.sortById();
 
 			for (Teilnehmer teilnehmer : teilnehmerList) {
 				int tmp = teilnehmer.getId();
@@ -383,22 +372,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		}
 	}
 
-/*	public static void main(String[] args) {
-		try { 
-		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
-		
-    	List<Teilnehmer> teilnehmerList = new ArrayList<Teilnehmer>();
-    	teilnehmerList.add(new Teilnehmer(2, "Comic", "Duck", "Donald"));
-    	teilnehmerList.add(new Teilnehmer(3, "Zauberer", "Gans", "Gustav"));
-    	teilnehmerList.add(new Teilnehmer(7, "Personen", "Niko", "Klaus"));
-
-		new ListUI(teilnehmerList);
-		
-	}
-*/
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) {
