@@ -35,12 +35,12 @@ import javax.swing.text.DocumentFilter;
 import javax.swing.*;
 
 public class ListUI extends JFrame implements ActionListener, ListSelectionListener {
-	public ListUI(List<Teilnehmer> teilnehmerList) {
+	public ListUI(TeilnehmerModel model) {
 		this.editMode = 0;
 		this.lastSelected = 0;
 		
 		initComponents();
-		this.teilnehmerList=teilnehmerList;
+		this.teilnehmerList=model.getTeilnehmerList();
 		rebuildTeilnehmerJList();
 		teilnehmerJList.setSelectedIndex(0);
 	}
