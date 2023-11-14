@@ -1,6 +1,5 @@
 package com.nopnop9090.daa.Teilnehmerverwaltung;
 
-import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;

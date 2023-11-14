@@ -32,9 +32,10 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		this.editMode = 0;
 		this.lastSelected = 0;
 		
-		initComponents();
 		this.teilnehmerModel=model;
 		this.teilnehmerList=model.getTeilnehmerList();
+
+		initComponents();
 		
 		rebuildTeilnehmerJList();
 		teilnehmerJList.setSelectedIndex(0);
@@ -84,8 +85,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		btnAbort = new JButton();
 		listePanel = new JPanel();
 		scrollPane1 = new JScrollPane();
-		listModel = new DefaultListModel<Teilnehmer>();
-		teilnehmerJList = new JList<Teilnehmer>(listModel);
+		teilnehmerJList = new JList<Teilnehmer>(teilnehmerModel);
 
 		teilnehmerJList.addListSelectionListener(this);
 		
@@ -221,22 +221,20 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	private JPanel listePanel;
 	private JScrollPane scrollPane1;
 	private JList<Teilnehmer> teilnehmerJList;
-	private DefaultListModel<Teilnehmer> listModel;
 	
 	void rebuildTeilnehmerJList() {
 		teilnehmerModel.sortById();
 		
-		listModel.clear();
 		cmbGroup.removeAllItems();
 		
 		for (Teilnehmer teilnehmer : teilnehmerList) {
-			listModel.addElement(teilnehmer);
 			String group = teilnehmer.getGruppe();
 			if (isGroupInComboBox(group)==-1) {
 				cmbGroup.addItem(group);
 			}
 		}
-		Boolean allowEditDelete = (listModel.size()>0);
+
+		Boolean allowEditDelete = (teilnehmerModel.getSize()>0);
 		btnChange.setVisible(allowEditDelete);
 		btnDelete.setVisible(allowEditDelete);
 		

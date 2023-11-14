@@ -13,12 +13,15 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.AbstractListModel;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class TeilnehmerModel {
+@SuppressWarnings("serial")
+public class TeilnehmerModel extends AbstractListModel<Teilnehmer> {
 	private List<Teilnehmer> teilnehmerList;
 	
 	public TeilnehmerModel() {
@@ -31,6 +34,20 @@ public class TeilnehmerModel {
 
     public void addTeilnehmer(Teilnehmer teilnehmer) {
         teilnehmerList.add(teilnehmer);
+    }
+    
+    @Override
+    public int getSize() {
+        return teilnehmerList.size();
+    }
+
+    @Override
+    public Teilnehmer getElementAt(int index) {
+        return teilnehmerList.get(index);
+    }
+    
+    public void updateList() {
+        fireContentsChanged(this, 0, getSize() - 1);
     }
     
 	public void sortById() {
