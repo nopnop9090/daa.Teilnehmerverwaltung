@@ -135,8 +135,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		textPanel.add(txtSurName);
 		textPanel.add(txtFirstName);
 		
-		enableEdits(false);
-		
 		inputPanel.add(textPanel);
 		
 		tnPanel.add(inputPanel, BorderLayout.NORTH);
@@ -190,6 +188,9 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		this.pack();
 		
 		setLocationRelativeTo(getOwner());
+		
+		enableEdits(false);
+
 		setVisible(true);
 	}
 
@@ -260,6 +261,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 
 			enableEdits(false);
 			
+			teilnehmerJList.setSelectedIndex(-1);
 			teilnehmerJList.setSelectedIndex(this.lastSelected);
 			
 		} else {
@@ -365,15 +367,17 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				// didnt work, alert the user ..
 			}
 		}else if(e.getActionCommand().equalsIgnoreCase("abbruch")) {
-			this.editMode = 0;
 			clearFields();
 			switchEditMode();
+			this.editMode = 0;
 		}
 	}
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
+		
         if (!e.getValueIsAdjusting()) {
+    		System.out.println("listselection");
             // Get the selected value
             Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
             if (selectedTeilnehmer != null) {
