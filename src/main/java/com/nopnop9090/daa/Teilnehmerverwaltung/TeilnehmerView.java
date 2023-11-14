@@ -34,8 +34,8 @@ import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.*;
 
-public class ListUI extends JFrame implements ActionListener, ListSelectionListener {
-	public ListUI(TeilnehmerModel model) {
+public class TeilnehmerView extends JFrame implements ActionListener, ListSelectionListener {
+	public TeilnehmerView(TeilnehmerModel model) {
 		this.editMode = 0;
 		this.lastSelected = 0;
 		

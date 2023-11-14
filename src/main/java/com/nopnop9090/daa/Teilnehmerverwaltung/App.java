@@ -43,7 +43,7 @@ public class App
 		    e.printStackTrace();
 		}
 		
-		waitForClose(new ListUI(teilnehmerModel));
+		waitForClose(new TeilnehmerView(teilnehmerModel));
 		
     	teilnehmerModel.writeToCSV("teilnehmerliste.csv");
         
