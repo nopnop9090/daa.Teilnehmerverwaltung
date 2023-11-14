@@ -25,16 +25,7 @@ public class App
     	if(new File("teilnehmerliste.csv").exists()) {
         	teilnehmerModel.readFromCSV("teilnehmerliste.csv");
     	} else {
-    		List<Teilnehmer> teilnehmerList = teilnehmerModel.getTeilnehmerList();
-        	teilnehmerList.add(new Teilnehmer(1,"Comic","Maus","Minni"));
-        	teilnehmerList.add(new Teilnehmer(2,"Comic","Duck","Donald"));
-        	teilnehmerList.add(new Teilnehmer(3,"Zauberer","Gans","Gustav"));
-        	teilnehmerList.add(new Teilnehmer(4,"Zauberer","Dumbledore","Albus"));
-        	teilnehmerList.add(new Teilnehmer(5,"Zauberer","Potter","Harry"));
-        	teilnehmerList.add(new Teilnehmer(6,"Comic","Maus","Micky"));
-        	teilnehmerList.add(new Teilnehmer(7,"Personen","Niko","Klaus"));
-        	teilnehmerList.add(new Teilnehmer(8,"Personen","Christ","Kind"));
-        	teilnehmerList.add(new Teilnehmer(9,"Moderator","Meiser","Hans"));
+    		teilnehmerModel.setSampleContents();
     	}
     	
 		try { 
