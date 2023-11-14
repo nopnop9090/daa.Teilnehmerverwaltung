@@ -285,12 +285,9 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	}
 
 	public void clearFields() {
-		txtTNNr.setText("");
-		cmbGroup.setSelectedItem("");
-		txtFirstName.setText("");
-		txtSurName.setText("");
-
+		setFields("", "", "", "");
 	}
+
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
 		if(e.getActionCommand().equalsIgnoreCase("neu")) {
@@ -376,14 +373,22 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		}
 	}
 
+	public void setFields(String tnNr, String firstName, String surName, String group)
+	{
+		txtTNNr.setText(tnNr);
+		txtFirstName.setText(firstName);
+		txtSurName.setText(surName);
+		
+		int n=isGroupInComboBox(group);
+		if(n!=-1)
+			cmbGroup.setSelectedIndex(n);
+		else
+			cmbGroup.setSelectedItem(group);
+	}
+	
 	public void setFields(Teilnehmer tn) {
         if (tn != null) {
-            // Access the internal ID
-            int selectedId = tn.getId();
-            txtTNNr.setText("" + tn.getId());
-            txtFirstName.setText("" + tn.getVorname());
-            txtSurName.setText("" + tn.getName());
-            cmbGroup.setSelectedIndex(isGroupInComboBox(tn.getGruppe()));
+        	setFields("" + tn.getId(), tn.getVorname(), tn.getName(), tn.getGruppe());
         }
 	}
 	
