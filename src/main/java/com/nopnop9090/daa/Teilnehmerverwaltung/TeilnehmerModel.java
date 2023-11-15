@@ -70,6 +70,7 @@ public class TeilnehmerModel extends AbstractListModel<Teilnehmer> {
 				return Integer.compare(t1.getId(), t2.getId());
 			}
 		});
+		updateList();
 	}
 	
     public void readFromCSV(String filename) {
