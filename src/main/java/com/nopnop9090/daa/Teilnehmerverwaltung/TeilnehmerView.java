@@ -156,20 +156,15 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		buttonPanel.add(btnNew);
 
 		btnChange.setText("\u00c4ndern");
-		btnAbort.setVisible(false);
 		buttonPanel.add(btnChange);
 
 		btnDelete.setText("L\u00f6schen");
-		btnAbort.setVisible(false);
 		buttonPanel.add(btnDelete);
 
 		btnSave.setText("Speichern");
-		btnSave.addActionListener(this);
 		buttonPanel.add(btnSave);
-		btnSave.setVisible(false);
 		
 		btnAbort.setText("Abbruch");
-		btnAbort.setVisible(false);
 		buttonPanel.add(btnAbort);
 
 		
@@ -196,11 +191,15 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		
 		setLocationRelativeTo(getOwner());
 		
+		btnSave.setVisible(false);
+		btnAbort.setVisible(false);
+
 		tnJList.setModel(teilnehmerModel);
 		tnJList.addListSelectionListener(this);
 		btnNew.addActionListener(this);
 		btnChange.addActionListener(this);
 		btnDelete.addActionListener(this);
+		btnSave.addActionListener(this);
 		btnAbort.addActionListener(this);
 		
 		enableEdits();
