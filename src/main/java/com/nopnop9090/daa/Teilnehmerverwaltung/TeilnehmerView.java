@@ -98,10 +98,8 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		btnAbort = new JButton();
 		listePanel = new JPanel();
 		scrollPane1 = new JScrollPane();
-		tnJList = new JList<Teilnehmer>(teilnehmerModel);
+		tnJList = new JList<Teilnehmer>();
 
-		tnJList.addListSelectionListener(this);
-		
 		setTitle("Teilnehmerverwaltung");
 		setMinimumSize(new Dimension(690, 460));
 		setResizable(false);
@@ -155,16 +153,13 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
 		btnNew.setText("Neu");
-		btnNew.addActionListener(this);
 		buttonPanel.add(btnNew);
 
 		btnChange.setText("\u00c4ndern");
-		btnChange.addActionListener(this);
 		btnAbort.setVisible(false);
 		buttonPanel.add(btnChange);
 
 		btnDelete.setText("L\u00f6schen");
-		btnDelete.addActionListener(this);
 		btnAbort.setVisible(false);
 		buttonPanel.add(btnDelete);
 
@@ -174,7 +169,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		btnSave.setVisible(false);
 		
 		btnAbort.setText("Abbruch");
-		btnAbort.addActionListener(this);
 		btnAbort.setVisible(false);
 		buttonPanel.add(btnAbort);
 
@@ -201,6 +195,13 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		this.pack();
 		
 		setLocationRelativeTo(getOwner());
+		
+		tnJList.setModel(teilnehmerModel);
+		tnJList.addListSelectionListener(this);
+		btnNew.addActionListener(this);
+		btnChange.addActionListener(this);
+		btnDelete.addActionListener(this);
+		btnAbort.addActionListener(this);
 		
 		enableEdits();
 		
@@ -375,16 +376,23 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
-		if(e.getActionCommand().equalsIgnoreCase("neu")) {
-			btnClick_new();
-		}else if(e.getActionCommand().equalsIgnoreCase("ändern")) {
-			btnClick_change();
-		}else if(e.getActionCommand().equalsIgnoreCase("löschen")) {
-			btnClick_delete();
-		}else if(e.getActionCommand().equalsIgnoreCase("speichern")) {
-			btnClick_save();
-		}else if(e.getActionCommand().equalsIgnoreCase("abbruch")) {
-			btnClick_abort();
+
+		switch(e.getActionCommand().toLowerCase()) {
+			case "neu":
+				btnClick_new();
+				break;
+			case "ändern":
+				btnClick_change();
+				break;
+			case "löschen":
+				btnClick_delete();
+				break;
+			case "speichern":
+				btnClick_save();
+				break;
+			case "abbruch":
+				btnClick_abort();
+				break;
 		}
 	}
 
