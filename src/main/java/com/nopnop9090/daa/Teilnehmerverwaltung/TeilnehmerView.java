@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -190,8 +192,23 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		setLocationRelativeTo(getOwner());
 		
 		enableEdits(false);
+		
+		this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Perform the action you want when the window is closing
+                System.out.println("Window is closing. Performing cleanup or additional actions.");
 
-		setVisible(true);
+                // Schedule the additional work on the EDT
+                SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+					    performCleanupWork();
+					}
+				});
+            }
+        });
+		
 	}
 
 	private int editMode;
@@ -221,6 +238,13 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	private JPanel listePanel;
 	private JScrollPane scrollPane1;
 	private JList<Teilnehmer> teilnehmerJList;
+	
+	void performCleanupWork() {
+		System.out.println("closing ..");
+    	teilnehmerModel.writeToCSV("teilnehmerliste.csv");
+
+        System.exit(0);
+	}
 	
 	void rebuildTeilnehmerJList() {
 		teilnehmerModel.sortById();
@@ -288,88 +312,105 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		setFields("", "", "", "");
 	}
 
+	public void btnclick_neu() {
+		this.editMode = 1;
+		switchEditMode();
+
+		int newTNNr=1;
+		teilnehmerModel.sortById();
+
+		for (Teilnehmer teilnehmer : teilnehmerList) {
+			int tmp = teilnehmer.getId();
+			if(tmp>=newTNNr)
+				newTNNr=tmp+1;
+		}
+		
+		
+		txtTNNr.setText("" + newTNNr);
+		//txtGroup.setText("");
+		cmbGroup.setSelectedItem("");
+		txtFirstName.setText("");
+		txtSurName.setText("");
+	}
+	public void btnclick_aendern() {
+		this.editMode = 2;
+		switchEditMode();
+	}
+	public void btnclick_loeschen() {
+		// "are you sure?"
+		if(teilnehmerJList.getSelectedIndex()>=0) {	// make sure something is actually selected (the button should not be visible otherwise but who knows..)
+			if(JOptionPane.showConfirmDialog(null, "Soll der gewählte Eintrag wirklich gelöscht werden?", "Achtung", JOptionPane.YES_NO_OPTION)==0) {
+				Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
+				teilnehmerList.remove(selectedTeilnehmer);
+
+				clearFields();
+				
+				rebuildTeilnehmerJList();
+				teilnehmerJList.setSelectedIndex(0);
+				// yes, delete
+			}
+		}
+	}
+	public void btnclick_speichern() {
+		try {
+			Boolean skipSaving = false;
+
+			if(((String)cmbGroup.getSelectedItem()).length()<1 || txtFirstName.getText().length()<1 || txtSurName.getText().length()<1) {
+				skipSaving = true;
+				JOptionPane.showMessageDialog(null, "Alle Felder müssen ausgefüllt sein", "Fehler", JOptionPane.WARNING_MESSAGE);
+				// missing fields? alert the user and abort saving  
+			}
+				
+			if(this.editMode!=2 && !skipSaving) {
+				int newTNNr = Integer.parseInt(txtTNNr.getText());
+				for (Teilnehmer teilnehmer : teilnehmerList) {
+					if(newTNNr == teilnehmer.getId()) {
+						// already exisiting id? alert the user and abort saving 
+						JOptionPane.showMessageDialog(null, "Teilnehmernummer bereits vorhanden", "Fehler", JOptionPane.WARNING_MESSAGE);
+						skipSaving = true;
+						break;
+					}
+				}
+			}
+			if(!skipSaving) {
+				if(this.editMode==2) // edit = remove + readd
+					teilnehmerList.remove(teilnehmerJList.getSelectedValue());
+				
+				int newTNNr = Integer.parseInt(txtTNNr.getText());
+				Teilnehmer newtn = new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText());
+				teilnehmerModel.addTeilnehmer(newtn);
+				rebuildTeilnehmerJList();
+				this.editMode = 0;
+				switchEditMode();
+				
+				setFields(newtn);
+				
+				//teilnehmerJList.setSelectedIndex(0);
+			}
+		} catch( NumberFormatException ex ) {
+			JOptionPane.showMessageDialog(null, "Teilnehmernummer muss numerisch sein", "Fehler", JOptionPane.WARNING_MESSAGE);
+			// didnt work, alert the user ..
+		}
+	}
+	
+	public void btnclick_abbruch() {
+		this.editMode = 0;
+		switchEditMode();
+		setFields(teilnehmerJList.getSelectedValue());
+	}
+
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
 		if(e.getActionCommand().equalsIgnoreCase("neu")) {
-			this.editMode = 1;
-			switchEditMode();
-
-			int newTNNr=1;
-			teilnehmerModel.sortById();
-
-			for (Teilnehmer teilnehmer : teilnehmerList) {
-				int tmp = teilnehmer.getId();
-				if(tmp>=newTNNr)
-					newTNNr=tmp+1;
-			}
-			
-			
-			txtTNNr.setText("" + newTNNr);
-			//txtGroup.setText("");
-			cmbGroup.setSelectedItem("");
-			txtFirstName.setText("");
-			txtSurName.setText("");
+			btnclick_neu();
 		}else if(e.getActionCommand().equalsIgnoreCase("ändern")) {
-			this.editMode = 2;
-			switchEditMode();
+			btnclick_aendern();
 		}else if(e.getActionCommand().equalsIgnoreCase("löschen")) {
-			// "are you sure?"
-			if(teilnehmerJList.getSelectedIndex()>=0) {	// make sure something is actually selected (the button should not be visible otherwise but who knows..)
-				if(JOptionPane.showConfirmDialog(null, "Soll der gewählte Eintrag wirklich gelöscht werden?", "Achtung", JOptionPane.YES_NO_OPTION)==0) {
-					Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
-					teilnehmerList.remove(selectedTeilnehmer);
-
-					clearFields();
-					
-					rebuildTeilnehmerJList();
-					teilnehmerJList.setSelectedIndex(0);
-					// yes, delete
-				}
-			}
+			btnclick_loeschen();
 		}else if(e.getActionCommand().equalsIgnoreCase("speichern")) {
-			try {
-				Boolean skipSaving = false;
-
-				if(((String)cmbGroup.getSelectedItem()).length()<1 || txtFirstName.getText().length()<1 || txtSurName.getText().length()<1) {
-					skipSaving = true;
-					JOptionPane.showMessageDialog(null, "Alle Felder müssen ausgefüllt sein", "Fehler", JOptionPane.WARNING_MESSAGE);
-					// missing fields? alert the user and abort saving  
-				}
-					
-				if(this.editMode!=2 && !skipSaving) {
-					int newTNNr = Integer.parseInt(txtTNNr.getText());
-					for (Teilnehmer teilnehmer : teilnehmerList) {
-						if(newTNNr == teilnehmer.getId()) {
-							// already exisiting id? alert the user and abort saving 
-							JOptionPane.showMessageDialog(null, "Teilnehmernummer bereits vorhanden", "Fehler", JOptionPane.WARNING_MESSAGE);
-							skipSaving = true;
-							break;
-						}
-					}
-				}
-				if(!skipSaving) {
-					if(this.editMode==2) // edit = remove + readd
-						teilnehmerList.remove(teilnehmerJList.getSelectedValue());
-					
-					int newTNNr = Integer.parseInt(txtTNNr.getText());
-					Teilnehmer newtn = new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText());
-					teilnehmerModel.addTeilnehmer(newtn);
-					rebuildTeilnehmerJList();
-					this.editMode = 0;
-					switchEditMode();
-					
-					setFields(newtn);
-					
-					//teilnehmerJList.setSelectedIndex(0);
-				}
-			} catch( NumberFormatException ex ) {
-				JOptionPane.showMessageDialog(null, "Teilnehmernummer muss numerisch sein", "Fehler", JOptionPane.WARNING_MESSAGE);
-				// didnt work, alert the user ..
-			}
+			btnclick_speichern();
 		}else if(e.getActionCommand().equalsIgnoreCase("abbruch")) {
-			this.editMode = 0;
-			switchEditMode();
-			setFields(teilnehmerJList.getSelectedValue());
+			btnclick_abbruch();
 		}
 	}
 
