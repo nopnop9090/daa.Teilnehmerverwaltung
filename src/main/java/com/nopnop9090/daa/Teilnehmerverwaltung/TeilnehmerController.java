@@ -210,5 +210,28 @@ public class TeilnehmerController {
         }
 	}
 
+	public void miClick_quit() {
+	}
+
+	public void miClick_new() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void miClick_open() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void miClick_save() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void miClick_saveas() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

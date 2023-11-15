@@ -24,6 +24,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 @SuppressWarnings("serial")
 public class TeilnehmerView extends JFrame implements ActionListener, ListSelectionListener {
@@ -50,7 +51,15 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	private JPanel listePanel;
 	private JScrollPane scrollPane1;
 	public JList<Teilnehmer> tnJList;
-    
+	private JMenu menu = new JMenu();
+	private JMenuBar menuBar = new JMenuBar();
+	private JMenuItem miNew;
+	private JMenuItem miOpen;
+	private JMenuItem miSave;
+	private JMenuItem miSaveAs;
+	private JMenuItem miQuit;
+
+	
 	private TeilnehmerController controller = null;
 		
 	public void setController(TeilnehmerController controller) {
@@ -70,6 +79,44 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		Container contentPane = getContentPane();	// the frames contentpane
 		{
 			contentPane.setLayout(new BorderLayout());
+
+			menuBar = new JMenuBar();
+			{
+				menu = new JMenu("Datei");
+				{
+					miNew = new JMenuItem("Neu");
+					miNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
+					miNew.setMnemonic('N');
+					miNew.addActionListener(this);
+					menu.add(miNew);
+
+					miOpen = new JMenuItem("Öffnen ...");
+					miOpen.addActionListener(this);
+					menu.add(miOpen);
+
+					miSave = new JMenuItem("Speichern");
+					miSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+					miSave.setMnemonic('S');
+					miSave.addActionListener(this);
+					menu.add(miSave);
+
+					miSaveAs = new JMenuItem("Speichern unter ...");
+					miSaveAs.addActionListener(this);
+					menu.add(miSaveAs);
+					
+					// Trennlinie
+					menu.addSeparator();
+					
+					// 3. Eintrag zu Datei
+					miQuit = new JMenuItem("Beenden");
+					miQuit.addActionListener(this);
+					menu.add(miQuit);
+				}
+
+				menuBar.add(menu);
+			}
+
+			contentPane.add(menuBar, BorderLayout.NORTH);
 
 			JPanel outerPanel = new JPanel();	// surrounding panel with 20 pixel padding
 			{
@@ -150,22 +197,29 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 
 								btnNew = new JButton();
 								btnNew.setText("Neu");
+								btnNew.addActionListener(this);
 								buttonPanel.add(btnNew);
 
 								btnChange = new JButton();
 								btnChange.setText("\u00c4ndern");
+								btnChange.addActionListener(this);
 								buttonPanel.add(btnChange);
 
 								btnDelete = new JButton();
 								btnDelete.setText("L\u00f6schen");
+								btnDelete.addActionListener(this);
 								buttonPanel.add(btnDelete);
 
 								btnSave = new JButton();
 								btnSave.setText("Speichern");
+								btnSave.addActionListener(this);
+								btnSave.setVisible(false);
 								buttonPanel.add(btnSave);
 								
 								btnAbort = new JButton();
 								btnAbort.setText("Abbruch");
+								btnAbort.addActionListener(this);
+								btnAbort.setVisible(false);
 								buttonPanel.add(btnAbort);
 							}
 							
@@ -180,6 +234,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 							listePanel.setLayout(new BorderLayout());
 							
 							tnJList = new JList<Teilnehmer>();
+							tnJList.addListSelectionListener(this);
 
 							scrollPane1 = new JScrollPane();
 							scrollPane1.setViewportView(tnJList);
@@ -201,15 +256,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		
 		setLocationRelativeTo(getOwner());
 		
-		btnSave.setVisible(false);
-		btnAbort.setVisible(false);
-
-		tnJList.addListSelectionListener(this);
-		btnNew.addActionListener(this);
-		btnChange.addActionListener(this);
-		btnDelete.addActionListener(this);
-		btnSave.addActionListener(this);
-		btnAbort.addActionListener(this);
 		
 		this.addWindowListener(new WindowAdapter() {
             @Override
@@ -228,49 +274,78 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 
 
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getActionCommand() + " !");
+		System.out.println("[" + e.getActionCommand() + "]");
 
-		switch(e.getActionCommand().toLowerCase()) {
-			case "neu":
+		if(e.getSource() == btnNew) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
 						controller.btnClick_new();
 					}
 				});
-				break;
-			case "ändern":
+		} else if(e.getSource() == btnChange) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
 						controller.btnClick_change();
 					}
 				});
-				break;
-			case "löschen":
+		}else if(e.getSource() == btnDelete) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
 						controller.btnClick_delete();
 					}
 				});
-				break;
-			case "speichern":
+		}else if(e.getSource() == btnSave) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
 						controller.btnClick_save();
 					}
 				});
-				break;
-			case "abbruch":
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						controller.btnClick_abort();
-					}
-				});
-				break;
+		}else if(e.getSource() == btnAbort) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					controller.btnClick_abort();
+				}
+			});
+		}else if(e.getSource() == miNew) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					controller.miClick_new();
+				}
+			});
+		}else if(e.getSource() == miOpen) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					controller.miClick_open();
+				}
+			});
+		}else if(e.getSource() == miSave) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					controller.miClick_save();
+				}
+			});
+		}else if(e.getSource() == miSaveAs) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					controller.miClick_saveas();
+				}
+			});
+		}else if(e.getSource() == miQuit) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					controller.miClick_quit();
+				}
+			});
 		}
 	}
 
