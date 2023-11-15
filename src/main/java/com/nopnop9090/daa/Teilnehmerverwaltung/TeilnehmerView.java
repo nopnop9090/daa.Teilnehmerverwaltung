@@ -74,119 +74,140 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	}
 	
 	private void initComponents() {
-		mainPanel = new JPanel();
-		tnPanel = new JPanel();
-		inputPanel = new JPanel();
-		labelPanel = new JPanel();
-		lblTNNr = new JLabel();
-		lblGroup = new JLabel();
-		
-		lblSurName = new JLabel();
-		lblFirstName = new JLabel();
-		textPanel = new JPanel();
-		txtTNNr = new JTextField();
-		cmbGroup = new JComboBox<>();
-		cmbGroup.setEditable(true);
-
-		txtSurName = new JTextField();
-		txtFirstName = new JTextField();
-		buttonPanel = new JPanel();
-		btnNew = new JButton();
-		btnChange = new JButton();
-		btnDelete = new JButton();
-		btnSave = new JButton();
-		btnAbort = new JButton();
-		listePanel = new JPanel();
-		scrollPane1 = new JScrollPane();
-		tnJList = new JList<Teilnehmer>();
-
 		setTitle("Teilnehmerverwaltung");
 		setMinimumSize(new Dimension(690, 460));
 		setResizable(false);
-		Container contentPane = getContentPane();
-		contentPane.setLayout(new BorderLayout());
 		
-		mainPanel.setLayout(new GridLayout(1, 2, 20, 0));
+		Container contentPane = getContentPane();	// the frames contentpane
+		{
+			contentPane.setLayout(new BorderLayout());
 
-		tnPanel.setBorder(null);
-		tnPanel.setLayout(new BorderLayout());
+			JPanel outerPanel = new JPanel();	// surrounding panel with 20 pixel padding
+			{
+				outerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+				outerPanel.setLayout(new BorderLayout());
+				{
+					mainPanel = new JPanel();	
+					{
+						mainPanel.setLayout(new GridLayout(1, 2, 20, 0));
+						
+						tnPanel = new JPanel();
+						{
+							tnPanel.setBorder(null);
+							tnPanel.setLayout(new BorderLayout());
 
-		inputPanel.setBorder(new TitledBorder("Teilnehmer"));
-		inputPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+							inputPanel = new JPanel();
+							{
+								inputPanel.setBorder(new TitledBorder("Teilnehmer"));
+								inputPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
-		labelPanel.setLayout(new GridLayout(4, 1, 0, 16));
+								labelPanel = new JPanel();
+								{
+									labelPanel.setLayout(new GridLayout(4, 1, 0, 16));
 
-		lblTNNr.setText("TN-Nr");
-		lblTNNr.setHorizontalAlignment(SwingConstants.RIGHT);
-		labelPanel.add(lblTNNr);
+									lblTNNr = new JLabel();
+									lblTNNr.setText("TN-Nr");
+									lblTNNr.setHorizontalAlignment(SwingConstants.RIGHT);
+									labelPanel.add(lblTNNr);
 
-		lblGroup.setText("Gruppe");
-		lblGroup.setHorizontalAlignment(SwingConstants.RIGHT);
-		labelPanel.add(lblGroup);
+									lblGroup = new JLabel();
+									lblGroup.setText("Gruppe");
+									lblGroup.setHorizontalAlignment(SwingConstants.RIGHT);
+									labelPanel.add(lblGroup);
 
-		lblSurName.setText("Name");
-		lblSurName.setHorizontalAlignment(SwingConstants.RIGHT);
-		labelPanel.add(lblSurName);
+									lblSurName = new JLabel();
+									lblSurName.setText("Name");
+									lblSurName.setHorizontalAlignment(SwingConstants.RIGHT);
+									labelPanel.add(lblSurName);
 
-		lblFirstName.setText("Vorname");
-		lblFirstName.setHorizontalAlignment(SwingConstants.RIGHT);
-		labelPanel.add(lblFirstName);
+									lblFirstName = new JLabel();
+									lblFirstName.setText("Vorname");
+									lblFirstName.setHorizontalAlignment(SwingConstants.RIGHT);
+									labelPanel.add(lblFirstName);
+								}
+
+								inputPanel.add(labelPanel);
+								
+								
+								textPanel = new JPanel();
+								{
+									textPanel.setLayout(new GridLayout(4, 1, 0, 10));
+									
+									txtTNNr = new JTextField();
+									txtTNNr.setMinimumSize(new Dimension(300, 20));
+									txtTNNr.setPreferredSize(new Dimension(300, 20));
+									((AbstractDocument) txtTNNr.getDocument()).setDocumentFilter(new NumericFilter());
+									textPanel.add(txtTNNr);
+
+									cmbGroup = new JComboBox<>();
+									cmbGroup.setEditable(true);
+									textPanel.add(cmbGroup);
+
+									txtSurName = new JTextField();
+									textPanel.add(txtSurName);
+
+									txtFirstName = new JTextField();
+									textPanel.add(txtFirstName);
+								}
+
+								inputPanel.add(textPanel);
+							}
+
+							tnPanel.add(inputPanel, BorderLayout.NORTH);
+
+							buttonPanel = new JPanel();
+							{
+								buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+								btnNew = new JButton();
+								btnNew.setText("Neu");
+								buttonPanel.add(btnNew);
+
+								btnChange = new JButton();
+								btnChange.setText("\u00c4ndern");
+								buttonPanel.add(btnChange);
+
+								btnDelete = new JButton();
+								btnDelete.setText("L\u00f6schen");
+								buttonPanel.add(btnDelete);
+
+								btnSave = new JButton();
+								btnSave.setText("Speichern");
+								buttonPanel.add(btnSave);
+								
+								btnAbort = new JButton();
+								btnAbort.setText("Abbruch");
+								buttonPanel.add(btnAbort);
+							}
+							
+							tnPanel.add(buttonPanel, BorderLayout.SOUTH);
+						}
+
+						mainPanel.add(tnPanel);
+					
+						listePanel = new JPanel();
+						{
+							listePanel.setBorder(new TitledBorder("TN-Liste"));
+							listePanel.setLayout(new BorderLayout());
+							
+							tnJList = new JList<Teilnehmer>();
+
+							scrollPane1 = new JScrollPane();
+							scrollPane1.setViewportView(tnJList);
+							scrollPane1.setBorder(null);
+
+							listePanel.add(scrollPane1, BorderLayout.CENTER);
+						}
+
+						mainPanel.add(listePanel);
+					}
+				}
+				outerPanel.add(mainPanel, BorderLayout.CENTER);
+			}
+
+			contentPane.add(outerPanel, BorderLayout.CENTER);
+		}
 		
-		inputPanel.add(labelPanel);
-
-		textPanel.setLayout(new GridLayout(4, 1, 0, 10));
-
-		txtTNNr.setMinimumSize(new Dimension(300, 20));
-		txtTNNr.setPreferredSize(new Dimension(300, 20));
-		((AbstractDocument) txtTNNr.getDocument()).setDocumentFilter(new NumericFilter());
-		textPanel.add(txtTNNr);
-
-		
-		textPanel.add(cmbGroup);
-		textPanel.add(txtSurName);
-		textPanel.add(txtFirstName);
-		
-		inputPanel.add(textPanel);
-		
-		tnPanel.add(inputPanel, BorderLayout.NORTH);
-
-		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		
-		btnNew.setText("Neu");
-		buttonPanel.add(btnNew);
-
-		btnChange.setText("\u00c4ndern");
-		buttonPanel.add(btnChange);
-
-		btnDelete.setText("L\u00f6schen");
-		buttonPanel.add(btnDelete);
-
-		btnSave.setText("Speichern");
-		buttonPanel.add(btnSave);
-		
-		btnAbort.setText("Abbruch");
-		buttonPanel.add(btnAbort);
-
-		
-		tnPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-		mainPanel.add(tnPanel);
-
-		listePanel.setBorder(new TitledBorder("TN-Liste"));
-		listePanel.setLayout(new BorderLayout());
-
-		scrollPane1.setViewportView(tnJList);
-		scrollPane1.setBorder(null);
-		
-		listePanel.add(scrollPane1, BorderLayout.CENTER);
-		mainPanel.add(listePanel);
-
-		JPanel outerPanel = new JPanel();
-		outerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		outerPanel.setLayout(new BorderLayout());
-		outerPanel.add(mainPanel, BorderLayout.CENTER);
-		
-		contentPane.add(outerPanel, BorderLayout.CENTER);
 		this.pack();
 		
 		setLocationRelativeTo(getOwner());
