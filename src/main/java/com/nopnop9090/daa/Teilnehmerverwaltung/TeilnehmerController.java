@@ -211,6 +211,7 @@ public class TeilnehmerController {
 	}
 
 	public void miClick_quit() {
+		view.dispose();
 	}
 
 	public void miClick_new() {
