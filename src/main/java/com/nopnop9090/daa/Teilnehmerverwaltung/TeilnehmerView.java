@@ -9,8 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -33,28 +31,40 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
     private static final int MODE_EDIT = 1;
     private static final int MODE_CHANGE = 2;
     
+	private int editMode = MODE_DISPLAY;
+	private Teilnehmer lastSelected = null;
+	private TeilnehmerModel teilnehmerModel;
+	private JPanel mainPanel;
+	private JPanel tnPanel;
+	private JPanel inputPanel;
+	private JPanel labelPanel;
+	private JLabel lblTNNr;
+	private JLabel lblGroup;
+	private JLabel lblSurName;
+	private JLabel lblFirstName;
+	private JPanel textPanel;
+	private JTextField txtTNNr;
+	private JTextField txtGroup;
+	private JComboBox<String> cmbGroup;
+	private JTextField txtSurName;
+	private JTextField txtFirstName;
+	private JPanel buttonPanel;
+	private JButton btnNew;
+	private JButton btnChange;
+	private JButton btnDelete;
+	private JButton btnSave;
+	private JButton btnAbort;
+	private JPanel listePanel;
+	private JScrollPane scrollPane1;
+	private JList<Teilnehmer> tnJList;
+    
 	public TeilnehmerView(TeilnehmerModel model) {
-		this.editMode = MODE_DISPLAY;
-		this.lastSelected = 0;
-		
 		this.teilnehmerModel=model;
 
 		initComponents();
-		
 		rebuild_tnJList();
-		tnJList.setSelectedIndex(0);
 	}
 	
-	public void enableEdits(Boolean enable)
-	{
-		if(this.editMode!=MODE_CHANGE)
-			txtTNNr.setEditable(enable);
-		cmbGroup.setEnabled(enable);
-		txtSurName.setEditable(enable);
-		txtFirstName.setEditable(enable);
-		
-	}
-
 	private void initComponents() {
 		mainPanel = new JPanel();
 		tnPanel = new JPanel();
@@ -67,7 +77,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		lblFirstName = new JLabel();
 		textPanel = new JPanel();
 		txtTNNr = new JTextField();
-		//txtGroup = new JTextField();
 		cmbGroup = new JComboBox<>();
 		cmbGroup.setEditable(true);
 
@@ -127,7 +136,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		textPanel.add(txtTNNr);
 
 		
-		//textPanel.add(txtGroup);
 		textPanel.add(cmbGroup);
 		textPanel.add(txtSurName);
 		textPanel.add(txtFirstName);
@@ -186,14 +194,11 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		
 		setLocationRelativeTo(getOwner());
 		
-		enableEdits(false);
+		enableEdits();
 		
 		this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                // Perform the action you want when the window is closing
-                System.out.println("Window is closing. Performing cleanup or additional actions.");
-
                 // Schedule the additional work on the EDT
                 SwingUtilities.invokeLater(new Runnable() {
 					@Override
@@ -206,33 +211,18 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		
 	}
 
-	private int editMode;
-	private int lastSelected;
-	private TeilnehmerModel teilnehmerModel;
-	private JPanel mainPanel;
-	private JPanel tnPanel;
-	private JPanel inputPanel;
-	private JPanel labelPanel;
-	private JLabel lblTNNr;
-	private JLabel lblGroup;
-	private JLabel lblSurName;
-	private JLabel lblFirstName;
-	private JPanel textPanel;
-	private JTextField txtTNNr;
-	private JTextField txtGroup;
-	private JComboBox<String> cmbGroup;
-	private JTextField txtSurName;
-	private JTextField txtFirstName;
-	private JPanel buttonPanel;
-	private JButton btnNew;
-	private JButton btnChange;
-	private JButton btnDelete;
-	private JButton btnSave;
-	private JButton btnAbort;
-	private JPanel listePanel;
-	private JScrollPane scrollPane1;
-	private JList<Teilnehmer> tnJList;
-	
+	public void enableEdits()
+	{
+		Boolean enable = (this.editMode==MODE_EDIT || this.editMode==MODE_CHANGE);
+		
+		if(this.editMode!=MODE_CHANGE)
+			txtTNNr.setEditable(enable);
+		cmbGroup.setEnabled(enable);
+		txtSurName.setEditable(enable);
+		txtFirstName.setEditable(enable);
+		tnJList.setEnabled(!enable);
+	}
+
 	void performCleanupWork() {
 		System.out.println("closing ..");
     	teilnehmerModel.writeToCSV("teilnehmerliste.csv");
@@ -241,6 +231,10 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	}
 	
 	void rebuild_tnJList() {
+		Teilnehmer oldtn = tnJList.getSelectedValue();
+		if(oldtn != null)
+			System.out.println("info: " + oldtn);
+			
 		teilnehmerModel.sortById();
 		
 		cmbGroup.removeAllItems();
@@ -255,7 +249,10 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		Boolean allowEditDelete = (teilnehmerModel.getSize()>0);
 		btnChange.setVisible(allowEditDelete);
 		btnDelete.setVisible(allowEditDelete);
-		
+		if(oldtn == null)
+			tnJList.setSelectedIndex(0);
+		else
+			tnJList.setSelectedValue(oldtn,  true);
 	}
 
 	private int isGroupInComboBox(String group) {
@@ -270,36 +267,24 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	public void switchEditMode() {
 		if(btnSave.isVisible()) {
 			btnNew.setVisible(true);
-			
 			btnSave.setVisible(false);
 			btnAbort.setVisible(false);
 			
-			tnJList.setEnabled(true);
-			rebuild_tnJList();
-
-			enableEdits(false);
-			
-			tnJList.setSelectedIndex(this.lastSelected);
+			rebuild_tnJList(); // this will make bntChange and btnDelete visible if appropriate 
+			tnJList.setSelectedValue(this.lastSelected, true);
 			
 		} else {
-			this.lastSelected=0;
-			
-			if(this.editMode==MODE_CHANGE)
-				this.lastSelected = tnJList.getSelectedIndex();
-			
+			this.lastSelected = tnJList.getSelectedValue();
 			
 			btnNew.setVisible(false);
-			
-			btnChange.setVisible(false);
-			btnDelete.setVisible(false);
-			
 			btnSave.setVisible(true);
 			btnAbort.setVisible(true);
 			
-			tnJList.setEnabled(false);
-
-			enableEdits(true);
+			// explicitly set visible to these to false, they are made visible in rebuild_tnJList as needed
+			btnChange.setVisible(false);
+			btnDelete.setVisible(false);
 		}
+		enableEdits();
 	}
 
 	public void clearFields() {
@@ -311,25 +296,20 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		switchEditMode();
 
 		int newTNNr=1;
-		teilnehmerModel.sortById();
-
 		for (Teilnehmer teilnehmer : teilnehmerModel.getTeilnehmerList()) {
 			int tmp = teilnehmer.getId();
 			if(tmp>=newTNNr)
 				newTNNr=tmp+1;
 		}
 		
-		
-		txtTNNr.setText("" + newTNNr);
-		//txtGroup.setText("");
-		cmbGroup.setSelectedItem("");
-		txtFirstName.setText("");
-		txtSurName.setText("");
+		setFields("" + newTNNr, "", "", "");
 	}
+	
 	public void btnClick_change() {
 		this.editMode = MODE_CHANGE;
 		switchEditMode();
 	}
+	
 	public void btnClick_delete() {
 		// "are you sure?"
 		if(tnJList.getSelectedIndex()>=0) {	// make sure something is actually selected (the button should not be visible otherwise but who knows..)
@@ -340,7 +320,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				clearFields();
 				
 				rebuild_tnJList();
-				tnJList.setSelectedIndex(0);
 				// yes, delete
 			}
 		}
@@ -377,7 +356,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				this.editMode = MODE_DISPLAY;
 				switchEditMode();
 				
-				setFields(newtn);
+				setFields(this.lastSelected);
 				
 				//teilnehmerJList.setSelectedIndex(0);
 			}
@@ -390,7 +369,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	public void btnClick_abort() {
 		this.editMode = MODE_DISPLAY;
 		switchEditMode();
-		setFields(tnJList.getSelectedValue());
+		setFields(this.lastSelected);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -431,10 +410,10 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	public void valueChanged(ListSelectionEvent e) {
 		
         if (!e.getValueIsAdjusting()) {
-    		System.out.println("listselection");
             // Get the selected value
-    		this.lastSelected = tnJList.getSelectedIndex();
-    		setFields(tnJList.getSelectedValue());
+    		this.lastSelected = tnJList.getSelectedValue();
+    		System.out.println("listselection: " + this.lastSelected);
+    		setFields(this.lastSelected);
         }
 	}
 }
