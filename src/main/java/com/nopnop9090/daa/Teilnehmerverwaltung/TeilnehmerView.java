@@ -27,13 +27,6 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class TeilnehmerView extends JFrame implements ActionListener, ListSelectionListener {
-	private static final int MODE_DISPLAY = 0;
-    private static final int MODE_EDIT = 1;
-    private static final int MODE_CHANGE = 2;
-    
-	private int editMode = MODE_DISPLAY;
-	private Teilnehmer lastSelected = null;
-
 	private JPanel mainPanel;
 	private JPanel tnPanel;
 	private JPanel inputPanel;
@@ -43,34 +36,32 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	private JLabel lblSurName;
 	private JLabel lblFirstName;
 	private JPanel textPanel;
-	private JTextField txtTNNr;
-	private JTextField txtGroup;
-	private JComboBox<String> cmbGroup;
-	private JTextField txtSurName;
-	private JTextField txtFirstName;
+	public JTextField txtTNNr;
+	public JTextField txtGroup;
+	public JComboBox<String> cmbGroup;
+	public JTextField txtSurName;
+	public JTextField txtFirstName;
 	private JPanel buttonPanel;
-	private JButton btnNew;
-	private JButton btnChange;
-	private JButton btnDelete;
-	private JButton btnSave;
-	private JButton btnAbort;
+	public JButton btnNew;
+	public JButton btnChange;
+	public JButton btnDelete;
+	public JButton btnSave;
+	public JButton btnAbort;
 	private JPanel listePanel;
 	private JScrollPane scrollPane1;
-	private JList<Teilnehmer> tnJList;
+	public JList<Teilnehmer> tnJList;
     
-	private TeilnehmerController teilnehmerController = null;
-	private TeilnehmerModel teilnehmerModel = null;
+	private TeilnehmerController controller = null;
+	private TeilnehmerModel model = null;
 		
 	public void setController(TeilnehmerController controller) {
-		this.teilnehmerController = controller;
+		this.controller = controller;
 		System.out.println("controller registered");
 	}
 
 	public TeilnehmerView(TeilnehmerModel model) {
-		this.teilnehmerModel=model;
-
+		this.model=model;
 		initComponents();
-		rebuild_tnJList();
 	}
 	
 	private void initComponents() {
@@ -215,15 +206,13 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		btnSave.setVisible(false);
 		btnAbort.setVisible(false);
 
-		tnJList.setModel(teilnehmerModel);
+		tnJList.setModel(model);
 		tnJList.addListSelectionListener(this);
 		btnNew.addActionListener(this);
 		btnChange.addActionListener(this);
 		btnDelete.addActionListener(this);
 		btnSave.addActionListener(this);
 		btnAbort.addActionListener(this);
-		
-		enableEdits();
 		
 		this.addWindowListener(new WindowAdapter() {
             @Override
@@ -232,7 +221,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
                 SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-					    performCleanupWork();
+					    controller.performCleanupWork();
 					}
 				});
             }
@@ -240,209 +229,60 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		
 	}
 
-	public void enableEdits()
-	{
-		Boolean enable = (this.editMode==MODE_EDIT || this.editMode==MODE_CHANGE);
-		
-		if(this.editMode!=MODE_CHANGE)
-			txtTNNr.setEditable(enable);
-		cmbGroup.setEnabled(enable);
-		txtSurName.setEditable(enable);
-		txtFirstName.setEditable(enable);
-		tnJList.setEnabled(!enable);
-	}
-
-	void performCleanupWork() {
-		System.out.println("closing ..");
-    	teilnehmerModel.writeToCSV("teilnehmerliste.csv");
-
-        System.exit(0);
-	}
-	
-	void rebuild_tnJList() {
-		Teilnehmer oldtn = tnJList.getSelectedValue();
-		if(oldtn != null)
-			System.out.println("info: " + oldtn);
-			
-		teilnehmerModel.sortById();
-		
-		cmbGroup.removeAllItems();
-		
-		for (Teilnehmer teilnehmer : teilnehmerModel.getTeilnehmerList()) {
-			String group = teilnehmer.getGruppe();
-			if (isGroupInComboBox(group)==-1) {
-				cmbGroup.addItem(group);
-			}
-		}
-
-		Boolean allowEditDelete = (teilnehmerModel.getSize()>0);
-		btnChange.setVisible(allowEditDelete);
-		btnDelete.setVisible(allowEditDelete);
-		if(oldtn == null)
-			tnJList.setSelectedIndex(0);
-		else
-			tnJList.setSelectedValue(oldtn,  true);
-	}
-
-	private int isGroupInComboBox(String group) {
-	    for (int i = 0; i < cmbGroup.getItemCount(); i++) {
-	        if (group.equals(cmbGroup.getItemAt(i))) {
-	            return i;
-	        }
-	    }
-	    return -1;
-	}
-	
-	public void switchEditMode() {
-		if(btnSave.isVisible()) {
-			btnNew.setVisible(true);
-			btnSave.setVisible(false);
-			btnAbort.setVisible(false);
-			
-			rebuild_tnJList(); // this will make bntChange and btnDelete visible if appropriate 
-			tnJList.setSelectedValue(this.lastSelected, true);
-			
-		} else {
-			this.lastSelected = tnJList.getSelectedValue();
-			
-			btnNew.setVisible(false);
-			btnSave.setVisible(true);
-			btnAbort.setVisible(true);
-			
-			// explicitly set visible to these to false, they are made visible in rebuild_tnJList as needed
-			btnChange.setVisible(false);
-			btnDelete.setVisible(false);
-		}
-		enableEdits();
-	}
-
-	public void clearFields() {
-		setFields("", "", "", "");
-	}
-
-	public void btnClick_new() {
-		this.editMode = MODE_EDIT;
-		switchEditMode();
-
-		int newTNNr=1;
-		for (Teilnehmer teilnehmer : teilnehmerModel.getTeilnehmerList()) {
-			int tmp = teilnehmer.getId();
-			if(tmp>=newTNNr)
-				newTNNr=tmp+1;
-		}
-		
-		setFields("" + newTNNr, "", "", "");
-	}
-	
-	public void btnClick_change() {
-		this.editMode = MODE_CHANGE;
-		switchEditMode();
-	}
-	
-	public void btnClick_delete() {
-		// "are you sure?"
-		if(tnJList.getSelectedIndex()>=0) {	// make sure something is actually selected (the button should not be visible otherwise but who knows..)
-			if(JOptionPane.showConfirmDialog(null, "Soll der gewählte Eintrag wirklich gelöscht werden?", "Achtung", JOptionPane.YES_NO_OPTION)==0) {
-				Teilnehmer selectedTeilnehmer = tnJList.getSelectedValue();
-				teilnehmerModel.remove(selectedTeilnehmer);
-				rebuild_tnJList();
-				// yes, delete
-			}
-		}
-	}
-	public void btnClick_save () {
-		try {
-			Boolean skipSaving = false;
-
-			if(((String)cmbGroup.getSelectedItem()).length()<1 || txtFirstName.getText().length()<1 || txtSurName.getText().length()<1) {
-				skipSaving = true;
-				JOptionPane.showMessageDialog(null, "Alle Felder müssen ausgefüllt sein", "Fehler", JOptionPane.WARNING_MESSAGE);
-				// missing fields? alert the user and abort saving  
-			}
-				
-			if(this.editMode!=MODE_CHANGE && !skipSaving) {
-				int newTNNr = Integer.parseInt(txtTNNr.getText());
-				for (Teilnehmer teilnehmer : teilnehmerModel.getTeilnehmerList()) {
-					if(newTNNr == teilnehmer.getId()) {
-						// already exisiting id? alert the user and abort saving 
-						JOptionPane.showMessageDialog(null, "Teilnehmernummer bereits vorhanden", "Fehler", JOptionPane.WARNING_MESSAGE);
-						skipSaving = true;
-						break;
-					}
-				}
-			}
-			if(!skipSaving) {
-				if(this.editMode==MODE_CHANGE) // edit = remove + readd 
-					teilnehmerModel.remove(tnJList.getSelectedValue());
-				
-				Teilnehmer newtn = new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText());
-				teilnehmerModel.add(newtn);
-				this.lastSelected = newtn;
-
-				this.editMode = MODE_DISPLAY;
-				switchEditMode();
-			}
-		} catch( NumberFormatException ex ) {
-			JOptionPane.showMessageDialog(null, "Teilnehmernummer muss numerisch sein", "Fehler", JOptionPane.WARNING_MESSAGE);
-			// didnt work, alert the user ..
-		}
-	}
-	
-	public void btnClick_abort() {
-		this.editMode = MODE_DISPLAY;
-		switchEditMode();
-		setFields(this.lastSelected);
-	}
 
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
 
 		switch(e.getActionCommand().toLowerCase()) {
 			case "neu":
-				btnClick_new();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						controller.btnClick_new();
+					}
+				});
 				break;
 			case "ändern":
-				btnClick_change();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						controller.btnClick_change();
+					}
+				});
 				break;
 			case "löschen":
-				btnClick_delete();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						controller.btnClick_delete();
+					}
+				});
 				break;
 			case "speichern":
-				btnClick_save();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						controller.btnClick_save();
+					}
+				});
 				break;
 			case "abbruch":
-				btnClick_abort();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						controller.btnClick_abort();
+					}
+				});
 				break;
 		}
 	}
 
-	public void setFields(String tnNr, String firstName, String surName, String group)
-	{
-		txtTNNr.setText(tnNr);
-		txtFirstName.setText(firstName);
-		txtSurName.setText(surName);
-		
-		int n=isGroupInComboBox(group);
-		if(n!=-1)
-			cmbGroup.setSelectedIndex(n);
-		else
-			cmbGroup.setSelectedItem(group);
-	}
-	
-	public void setFields(Teilnehmer tn) {
-        if (tn != null) {
-        	setFields("" + tn.getId(), tn.getVorname(), tn.getName(), tn.getGruppe());
-        }
-	}
-	
 	@Override
-	public void valueChanged(ListSelectionEvent e) {
-		
-        if (!e.getValueIsAdjusting()) {
-            // Get the selected value
-    		this.lastSelected = tnJList.getSelectedValue();
-    		System.out.println("listselection: " + this.lastSelected);
-    		setFields(this.lastSelected);
-        }
-	}
-}
+	public void valueChanged(final ListSelectionEvent e) {
+	    SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+			    controller.valueChanged(e);
+			}
+		});
+	}}
