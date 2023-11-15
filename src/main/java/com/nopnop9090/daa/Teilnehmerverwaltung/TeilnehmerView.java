@@ -44,16 +44,8 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	
 	public void enableEdits(Boolean enable)
 	{
-
-//		// enable/disable text fields (different looks)
-//		txtTNNr.setFocusable(enable);
-//		txtGroup.setFocusable(enable);
-//		txtSurName.setFocusable(enable);
-//		txtFirstName.setFocusable(enable);
-	
 		if(this.editMode!=2)
 			txtTNNr.setEditable(enable);
-		//txtGroup.setEditable(enable);
 		cmbGroup.setEnabled(enable);
 		txtSurName.setEditable(enable);
 		txtFirstName.setEditable(enable);
@@ -312,7 +304,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		setFields("", "", "", "");
 	}
 
-	public void btnclick_neu() {
+	public void btnClick_new() {
 		this.editMode = 1;
 		switchEditMode();
 
@@ -332,11 +324,11 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		txtFirstName.setText("");
 		txtSurName.setText("");
 	}
-	public void btnclick_aendern() {
+	public void btnClick_change() {
 		this.editMode = 2;
 		switchEditMode();
 	}
-	public void btnclick_loeschen() {
+	public void btnClick_delete() {
 		// "are you sure?"
 		if(teilnehmerJList.getSelectedIndex()>=0) {	// make sure something is actually selected (the button should not be visible otherwise but who knows..)
 			if(JOptionPane.showConfirmDialog(null, "Soll der gewählte Eintrag wirklich gelöscht werden?", "Achtung", JOptionPane.YES_NO_OPTION)==0) {
@@ -351,7 +343,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 			}
 		}
 	}
-	public void btnclick_speichern() {
+	public void btnClick_save () {
 		try {
 			Boolean skipSaving = false;
 
@@ -393,7 +385,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		}
 	}
 	
-	public void btnclick_abbruch() {
+	public void btnClick_abort() {
 		this.editMode = 0;
 		switchEditMode();
 		setFields(teilnehmerJList.getSelectedValue());
@@ -402,15 +394,15 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand() + " !");
 		if(e.getActionCommand().equalsIgnoreCase("neu")) {
-			btnclick_neu();
+			btnClick_new();
 		}else if(e.getActionCommand().equalsIgnoreCase("ändern")) {
-			btnclick_aendern();
+			btnClick_change();
 		}else if(e.getActionCommand().equalsIgnoreCase("löschen")) {
-			btnclick_loeschen();
+			btnClick_delete();
 		}else if(e.getActionCommand().equalsIgnoreCase("speichern")) {
-			btnclick_speichern();
+			btnClick_save();
 		}else if(e.getActionCommand().equalsIgnoreCase("abbruch")) {
-			btnclick_abbruch();
+			btnClick_abort();
 		}
 	}
 
