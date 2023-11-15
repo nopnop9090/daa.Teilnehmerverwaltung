@@ -29,8 +29,12 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class TeilnehmerView extends JFrame implements ActionListener, ListSelectionListener {
+	private static final int MODE_DISPLAY = 0;
+    private static final int MODE_EDIT = 1;
+    private static final int MODE_CHANGE = 2;
+    
 	public TeilnehmerView(TeilnehmerModel model) {
-		this.editMode = 0;
+		this.editMode = MODE_DISPLAY;
 		this.lastSelected = 0;
 		
 		this.teilnehmerModel=model;
@@ -44,7 +48,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	
 	public void enableEdits(Boolean enable)
 	{
-		if(this.editMode!=2)
+		if(this.editMode!=MODE_CHANGE)
 			txtTNNr.setEditable(enable);
 		cmbGroup.setEnabled(enable);
 		txtSurName.setEditable(enable);
@@ -282,7 +286,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		} else {
 			this.lastSelected=0;
 			
-			if(this.editMode>1)
+			if(this.editMode==MODE_CHANGE)
 				this.lastSelected = teilnehmerJList.getSelectedIndex();
 			
 			
@@ -305,7 +309,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	}
 
 	public void btnClick_new() {
-		this.editMode = 1;
+		this.editMode = MODE_EDIT;
 		switchEditMode();
 
 		int newTNNr=1;
@@ -325,7 +329,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		txtSurName.setText("");
 	}
 	public void btnClick_change() {
-		this.editMode = 2;
+		this.editMode = MODE_CHANGE;
 		switchEditMode();
 	}
 	public void btnClick_delete() {
@@ -353,7 +357,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				// missing fields? alert the user and abort saving  
 			}
 				
-			if(this.editMode!=2 && !skipSaving) {
+			if(this.editMode!=MODE_CHANGE && !skipSaving) {
 				int newTNNr = Integer.parseInt(txtTNNr.getText());
 				for (Teilnehmer teilnehmer : teilnehmerList) {
 					if(newTNNr == teilnehmer.getId()) {
@@ -365,14 +369,14 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				}
 			}
 			if(!skipSaving) {
-				if(this.editMode==2) // edit = remove + readd
+				if(this.editMode==MODE_CHANGE) // edit = remove + readd
 					teilnehmerList.remove(teilnehmerJList.getSelectedValue());
 				
 				int newTNNr = Integer.parseInt(txtTNNr.getText());
 				Teilnehmer newtn = new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText());
 				teilnehmerModel.addTeilnehmer(newtn);
 				rebuildTeilnehmerJList();
-				this.editMode = 0;
+				this.editMode = MODE_DISPLAY;
 				switchEditMode();
 				
 				setFields(newtn);
@@ -386,7 +390,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	}
 	
 	public void btnClick_abort() {
-		this.editMode = 0;
+		this.editMode = MODE_DISPLAY;
 		switchEditMode();
 		setFields(teilnehmerJList.getSelectedValue());
 	}
