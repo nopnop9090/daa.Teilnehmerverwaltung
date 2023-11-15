@@ -33,7 +33,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
     
 	private int editMode = MODE_DISPLAY;
 	private Teilnehmer lastSelected = null;
-	private TeilnehmerModel teilnehmerModel;
+
 	private JPanel mainPanel;
 	private JPanel tnPanel;
 	private JPanel inputPanel;
@@ -58,6 +58,14 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	private JScrollPane scrollPane1;
 	private JList<Teilnehmer> tnJList;
     
+	private TeilnehmerController teilnehmerController = null;
+	private TeilnehmerModel teilnehmerModel = null;
+		
+	public void setController(TeilnehmerController controller) {
+		this.teilnehmerController = controller;
+		System.out.println("controller registered");
+	}
+
 	public TeilnehmerView(TeilnehmerModel model) {
 		this.teilnehmerModel=model;
 
@@ -316,9 +324,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 			if(JOptionPane.showConfirmDialog(null, "Soll der gewählte Eintrag wirklich gelöscht werden?", "Achtung", JOptionPane.YES_NO_OPTION)==0) {
 				Teilnehmer selectedTeilnehmer = tnJList.getSelectedValue();
 				teilnehmerModel.remove(selectedTeilnehmer);
-
-				clearFields();
-				
 				rebuild_tnJList();
 				// yes, delete
 			}

@@ -8,6 +8,6 @@ public class TeilnehmerController {
 	public TeilnehmerController(TeilnehmerModel model, TeilnehmerView view) {
 		this.model = model;
 		this.view = view;
-		
+		view.setController(this);
 	}
 }
