@@ -45,7 +45,7 @@ public class TeilnehmerModel extends AbstractListModel<Teilnehmer> {
         return teilnehmerList;
     }
 
-    public void addTeilnehmer(Teilnehmer teilnehmer) {
+    public void add(Teilnehmer teilnehmer) {
         teilnehmerList.add(teilnehmer);
     }
     
@@ -61,6 +61,10 @@ public class TeilnehmerModel extends AbstractListModel<Teilnehmer> {
     
     public void updateList() {
         fireContentsChanged(this, 0, getSize() - 1);
+    }
+    
+    public void remove(Teilnehmer tn) {
+    	teilnehmerList.remove(tn);
     }
     
 	public void sortById() {

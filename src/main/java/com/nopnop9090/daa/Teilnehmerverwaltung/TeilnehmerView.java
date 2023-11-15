@@ -38,7 +38,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		this.lastSelected = 0;
 		
 		this.teilnehmerModel=model;
-		this.teilnehmerList=model.getTeilnehmerList();
 
 		initComponents();
 		
@@ -210,7 +209,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	private int editMode;
 	private int lastSelected;
 	private TeilnehmerModel teilnehmerModel;
-	private List<Teilnehmer> teilnehmerList;
 	private JPanel mainPanel;
 	private JPanel tnPanel;
 	private JPanel inputPanel;
@@ -247,7 +245,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		
 		cmbGroup.removeAllItems();
 		
-		for (Teilnehmer teilnehmer : teilnehmerList) {
+		for (Teilnehmer teilnehmer : teilnehmerModel.getTeilnehmerList()) {
 			String group = teilnehmer.getGruppe();
 			if (isGroupInComboBox(group)==-1) {
 				cmbGroup.addItem(group);
@@ -315,7 +313,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		int newTNNr=1;
 		teilnehmerModel.sortById();
 
-		for (Teilnehmer teilnehmer : teilnehmerList) {
+		for (Teilnehmer teilnehmer : teilnehmerModel.getTeilnehmerList()) {
 			int tmp = teilnehmer.getId();
 			if(tmp>=newTNNr)
 				newTNNr=tmp+1;
@@ -337,7 +335,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		if(teilnehmerJList.getSelectedIndex()>=0) {	// make sure something is actually selected (the button should not be visible otherwise but who knows..)
 			if(JOptionPane.showConfirmDialog(null, "Soll der gewählte Eintrag wirklich gelöscht werden?", "Achtung", JOptionPane.YES_NO_OPTION)==0) {
 				Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
-				teilnehmerList.remove(selectedTeilnehmer);
+				teilnehmerModel.remove(selectedTeilnehmer);
 
 				clearFields();
 				
@@ -359,7 +357,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				
 			if(this.editMode!=MODE_CHANGE && !skipSaving) {
 				int newTNNr = Integer.parseInt(txtTNNr.getText());
-				for (Teilnehmer teilnehmer : teilnehmerList) {
+				for (Teilnehmer teilnehmer : teilnehmerModel.getTeilnehmerList()) {
 					if(newTNNr == teilnehmer.getId()) {
 						// already exisiting id? alert the user and abort saving 
 						JOptionPane.showMessageDialog(null, "Teilnehmernummer bereits vorhanden", "Fehler", JOptionPane.WARNING_MESSAGE);
@@ -370,11 +368,11 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 			}
 			if(!skipSaving) {
 				if(this.editMode==MODE_CHANGE) // edit = remove + readd
-					teilnehmerList.remove(teilnehmerJList.getSelectedValue());
+					teilnehmerModel.remove(teilnehmerJList.getSelectedValue());
 				
 				int newTNNr = Integer.parseInt(txtTNNr.getText());
 				Teilnehmer newtn = new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText());
-				teilnehmerModel.addTeilnehmer(newtn);
+				teilnehmerModel.add(newtn);
 				rebuildTeilnehmerJList();
 				this.editMode = MODE_DISPLAY;
 				switchEditMode();
