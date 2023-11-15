@@ -349,7 +349,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				if(this.editMode==MODE_CHANGE) // edit = remove + readd 
 					teilnehmerModel.remove(tnJList.getSelectedValue());
 				
-				int newTNNr = Integer.parseInt(txtTNNr.getText());
 				Teilnehmer newtn = new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText());
 				teilnehmerModel.add(newtn);
 				this.lastSelected = newtn;
