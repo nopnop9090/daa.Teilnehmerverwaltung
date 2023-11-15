@@ -41,8 +41,8 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 
 		initComponents();
 		
-		rebuildTeilnehmerJList();
-		teilnehmerJList.setSelectedIndex(0);
+		rebuild_tnJList();
+		tnJList.setSelectedIndex(0);
 	}
 	
 	public void enableEdits(Boolean enable)
@@ -81,9 +81,9 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		btnAbort = new JButton();
 		listePanel = new JPanel();
 		scrollPane1 = new JScrollPane();
-		teilnehmerJList = new JList<Teilnehmer>(teilnehmerModel);
+		tnJList = new JList<Teilnehmer>(teilnehmerModel);
 
-		teilnehmerJList.addListSelectionListener(this);
+		tnJList.addListSelectionListener(this);
 		
 		setTitle("Teilnehmerverwaltung");
 		setMinimumSize(new Dimension(690, 460));
@@ -170,7 +170,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		listePanel.setBorder(new TitledBorder("TN-Liste"));
 		listePanel.setLayout(new BorderLayout());
 
-		scrollPane1.setViewportView(teilnehmerJList);
+		scrollPane1.setViewportView(tnJList);
 		scrollPane1.setBorder(null);
 		
 		listePanel.add(scrollPane1, BorderLayout.CENTER);
@@ -231,7 +231,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	private JButton btnAbort;
 	private JPanel listePanel;
 	private JScrollPane scrollPane1;
-	private JList<Teilnehmer> teilnehmerJList;
+	private JList<Teilnehmer> tnJList;
 	
 	void performCleanupWork() {
 		System.out.println("closing ..");
@@ -240,7 +240,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
         System.exit(0);
 	}
 	
-	void rebuildTeilnehmerJList() {
+	void rebuild_tnJList() {
 		teilnehmerModel.sortById();
 		
 		cmbGroup.removeAllItems();
@@ -274,18 +274,18 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 			btnSave.setVisible(false);
 			btnAbort.setVisible(false);
 			
-			teilnehmerJList.setEnabled(true);
-			rebuildTeilnehmerJList();
+			tnJList.setEnabled(true);
+			rebuild_tnJList();
 
 			enableEdits(false);
 			
-			teilnehmerJList.setSelectedIndex(this.lastSelected);
+			tnJList.setSelectedIndex(this.lastSelected);
 			
 		} else {
 			this.lastSelected=0;
 			
 			if(this.editMode==MODE_CHANGE)
-				this.lastSelected = teilnehmerJList.getSelectedIndex();
+				this.lastSelected = tnJList.getSelectedIndex();
 			
 			
 			btnNew.setVisible(false);
@@ -296,7 +296,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 			btnSave.setVisible(true);
 			btnAbort.setVisible(true);
 			
-			teilnehmerJList.setEnabled(false);
+			tnJList.setEnabled(false);
 
 			enableEdits(true);
 		}
@@ -332,15 +332,15 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	}
 	public void btnClick_delete() {
 		// "are you sure?"
-		if(teilnehmerJList.getSelectedIndex()>=0) {	// make sure something is actually selected (the button should not be visible otherwise but who knows..)
+		if(tnJList.getSelectedIndex()>=0) {	// make sure something is actually selected (the button should not be visible otherwise but who knows..)
 			if(JOptionPane.showConfirmDialog(null, "Soll der gewählte Eintrag wirklich gelöscht werden?", "Achtung", JOptionPane.YES_NO_OPTION)==0) {
-				Teilnehmer selectedTeilnehmer = teilnehmerJList.getSelectedValue();
+				Teilnehmer selectedTeilnehmer = tnJList.getSelectedValue();
 				teilnehmerModel.remove(selectedTeilnehmer);
 
 				clearFields();
 				
-				rebuildTeilnehmerJList();
-				teilnehmerJList.setSelectedIndex(0);
+				rebuild_tnJList();
+				tnJList.setSelectedIndex(0);
 				// yes, delete
 			}
 		}
@@ -368,12 +368,12 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 			}
 			if(!skipSaving) {
 				if(this.editMode==MODE_CHANGE) // edit = remove + readd
-					teilnehmerModel.remove(teilnehmerJList.getSelectedValue());
+					teilnehmerModel.remove(tnJList.getSelectedValue());
 				
 				int newTNNr = Integer.parseInt(txtTNNr.getText());
 				Teilnehmer newtn = new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText());
 				teilnehmerModel.add(newtn);
-				rebuildTeilnehmerJList();
+				rebuild_tnJList();
 				this.editMode = MODE_DISPLAY;
 				switchEditMode();
 				
@@ -390,7 +390,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	public void btnClick_abort() {
 		this.editMode = MODE_DISPLAY;
 		switchEditMode();
-		setFields(teilnehmerJList.getSelectedValue());
+		setFields(tnJList.getSelectedValue());
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -433,8 +433,8 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
         if (!e.getValueIsAdjusting()) {
     		System.out.println("listselection");
             // Get the selected value
-    		this.lastSelected = teilnehmerJList.getSelectedIndex();
-    		setFields(teilnehmerJList.getSelectedValue());
+    		this.lastSelected = tnJList.getSelectedIndex();
+    		setFields(tnJList.getSelectedValue());
         }
 	}
 }
