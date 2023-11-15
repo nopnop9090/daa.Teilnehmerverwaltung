@@ -52,15 +52,13 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	public JList<Teilnehmer> tnJList;
     
 	private TeilnehmerController controller = null;
-	private TeilnehmerModel model = null;
 		
 	public void setController(TeilnehmerController controller) {
 		this.controller = controller;
 		System.out.println("controller registered");
 	}
 
-	public TeilnehmerView(TeilnehmerModel model) {
-		this.model=model;
+	public TeilnehmerView() {
 		initComponents();
 	}
 	
@@ -206,7 +204,6 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		btnSave.setVisible(false);
 		btnAbort.setVisible(false);
 
-		tnJList.setModel(model);
 		tnJList.addListSelectionListener(this);
 		btnNew.addActionListener(this);
 		btnChange.addActionListener(this);

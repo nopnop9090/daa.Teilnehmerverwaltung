@@ -17,7 +17,7 @@ public class App
             @Override
             public void run() {
             	TeilnehmerModel model = new TeilnehmerModel("teilnehmerliste.csv");
-            	TeilnehmerView view = new TeilnehmerView(model);
+            	TeilnehmerView view = new TeilnehmerView();
                 TeilnehmerController controller = new TeilnehmerController(model, view);
 
                 view.setVisible(true);
