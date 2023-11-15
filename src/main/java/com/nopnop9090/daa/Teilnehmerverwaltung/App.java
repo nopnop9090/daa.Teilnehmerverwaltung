@@ -1,7 +1,5 @@
 package com.nopnop9090.daa.Teilnehmerverwaltung;
 
-import java.io.File;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -18,14 +16,7 @@ public class App
 		SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-            	TeilnehmerModel model = new TeilnehmerModel();
-
-            	if(new File("teilnehmerliste.csv").exists()) {
-                	model.readFromCSV("teilnehmerliste.csv");
-            	} else {
-            		model.setSampleContents();
-            	}
-
+            	TeilnehmerModel model = new TeilnehmerModel("teilnehmerliste.csv");
             	TeilnehmerView view = new TeilnehmerView(model);
                 TeilnehmerController controller = new TeilnehmerController(model, view);
 

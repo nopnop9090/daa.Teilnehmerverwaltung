@@ -2,6 +2,7 @@ package com.nopnop9090.daa.Teilnehmerverwaltung;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -28,6 +29,16 @@ public class TeilnehmerModel extends AbstractListModel<Teilnehmer> {
         teilnehmerList = new ArrayList<>();
     }
 
+	public TeilnehmerModel(String csv_filename) {
+        this(); // call default constructor
+		
+    	if(new File(csv_filename).exists()) {
+        	readFromCSV(csv_filename);
+    	} else {
+    		setSampleContents();
+    	}
+	}
+	
 	public void setSampleContents() {
 		teilnehmerList.clear();
 		teilnehmerList.add(new Teilnehmer(1,"Comic","Maus","Minni"));
