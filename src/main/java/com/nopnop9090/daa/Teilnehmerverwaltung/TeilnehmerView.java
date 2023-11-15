@@ -346,19 +346,16 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 				}
 			}
 			if(!skipSaving) {
-				if(this.editMode==MODE_CHANGE) // edit = remove + readd
+				if(this.editMode==MODE_CHANGE) // edit = remove + readd 
 					teilnehmerModel.remove(tnJList.getSelectedValue());
 				
 				int newTNNr = Integer.parseInt(txtTNNr.getText());
 				Teilnehmer newtn = new Teilnehmer(Integer.parseInt(txtTNNr.getText()), ((String)cmbGroup.getSelectedItem()), txtSurName.getText(), txtFirstName.getText());
 				teilnehmerModel.add(newtn);
-				rebuild_tnJList();
+				this.lastSelected = newtn;
+
 				this.editMode = MODE_DISPLAY;
 				switchEditMode();
-				
-				setFields(this.lastSelected);
-				
-				//teilnehmerJList.setSelectedIndex(0);
 			}
 		} catch( NumberFormatException ex ) {
 			JOptionPane.showMessageDialog(null, "Teilnehmernummer muss numerisch sein", "Fehler", JOptionPane.WARNING_MESSAGE);
