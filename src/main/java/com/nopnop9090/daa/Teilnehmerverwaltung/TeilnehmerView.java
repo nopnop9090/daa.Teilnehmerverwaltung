@@ -51,7 +51,7 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 	private JPanel listePanel;
 	private JScrollPane scrollPane1;
 	public JList<Teilnehmer> tnJList;
-	private JMenu menu = new JMenu();
+	public JMenu menu = new JMenu();
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenuItem miNew;
 	private JMenuItem miOpen;

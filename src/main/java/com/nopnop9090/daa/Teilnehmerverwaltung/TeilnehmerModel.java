@@ -88,6 +88,10 @@ public class TeilnehmerModel extends AbstractListModel<Teilnehmer> {
 		updateList();
 	}
 	
+	public void clear() {
+		teilnehmerList.clear();
+		updateList();
+	}
     public void readFromCSV(String filename) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -110,6 +114,7 @@ public class TeilnehmerModel extends AbstractListModel<Teilnehmer> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+		updateList();
     }
 
     public void writeToCSV(String filename) {
@@ -178,6 +183,7 @@ public class TeilnehmerModel extends AbstractListModel<Teilnehmer> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+		updateList();
     }
 
     public void writeToExcel(String Filename) {

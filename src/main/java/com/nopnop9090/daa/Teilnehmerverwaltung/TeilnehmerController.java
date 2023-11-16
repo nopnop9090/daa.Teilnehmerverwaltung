@@ -19,6 +19,7 @@ public class TeilnehmerController {
 	private int editMode = MODE_DISPLAY;
 	private Teilnehmer lastSelected = null;
 
+	private Boolean file_changed_flag = false;
 	
 	public TeilnehmerController(TeilnehmerModel model, TeilnehmerView view) {
 		this.model = model;
@@ -57,6 +58,7 @@ public class TeilnehmerController {
 				Teilnehmer selectedTeilnehmer = view.tnJList.getSelectedValue();
 				model.remove(selectedTeilnehmer);
 				rebuild_tnJList();
+				file_changed_flag = true;
 				// yes, delete
 			}
 		}
@@ -92,6 +94,7 @@ public class TeilnehmerController {
 
 				this.editMode = MODE_DISPLAY;
 				switchEditMode();
+				file_changed_flag = true;
 			}
 		} catch( NumberFormatException ex ) {
 			JOptionPane.showMessageDialog(null, "Teilnehmernummer muss numerisch sein", "Fehler", JOptionPane.WARNING_MESSAGE);
@@ -187,6 +190,7 @@ public class TeilnehmerController {
 
 	public void switchEditMode() {
 		if(view.btnSave.isVisible()) {
+			view.menu.setEnabled(true);
 			view.btnNew.setVisible(true);
 			view.btnSave.setVisible(false);
 			view.btnAbort.setVisible(false);
@@ -197,6 +201,7 @@ public class TeilnehmerController {
 		} else {
 			this.lastSelected = view.tnJList.getSelectedValue();
 			
+			view.menu.setEnabled(false);
 			view.btnNew.setVisible(false);
 			view.btnSave.setVisible(true);
 			view.btnAbort.setVisible(true);
@@ -215,15 +220,34 @@ public class TeilnehmerController {
 	}
 
 	public void miClick_quit() {
+		if(!okayToLooseChanges()) 
+			return;
+		
 		view.dispose();
 	}
 
 	public void miClick_new() {
-		// TODO Auto-generated method stub
-		
+		if(!okayToLooseChanges()) 
+			return;
+
+		model.clear();
+		clearFields();
+		rebuild_tnJList();
+	}
+
+	public boolean okayToLooseChanges() {
+		if(file_changed_flag) {
+			if(JOptionPane.showConfirmDialog(null, "Nicht gespeicherter Inhalt. Fortfahren? ", "Achtung", JOptionPane.YES_NO_OPTION)==1) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public void miClick_open() {
+		if(!okayToLooseChanges()) 
+			return;
+		
 		JFileChooser fileChooser = new JFileChooser();
 		
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
@@ -233,7 +257,9 @@ public class TeilnehmerController {
             File selectedFile = fileChooser.getSelectedFile();
             System.out.println("Selected: " + selectedFile.getAbsolutePath());
             model.readFromCSV(selectedFile.getAbsolutePath());
-            model.updateList();
+            rebuild_tnJList();
+			view.tnJList.setSelectedIndex(0);
+			setFields(view.tnJList.getSelectedValue());
         } 		
 	}
 
