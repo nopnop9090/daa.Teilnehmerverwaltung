@@ -1,7 +1,11 @@
 package com.nopnop9090.daa.Teilnehmerverwaltung;
 
+import java.io.File;
+
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class TeilnehmerController {
 
@@ -220,8 +224,17 @@ public class TeilnehmerController {
 	}
 
 	public void miClick_open() {
-		// TODO Auto-generated method stub
+		JFileChooser fileChooser = new JFileChooser();
 		
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
+        fileChooser.setFileFilter(filter);
+        
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            System.out.println("Selected: " + selectedFile.getAbsolutePath());
+            model.readFromCSV(selectedFile.getAbsolutePath());
+            model.updateList();
+        } 		
 	}
 
 	public void miClick_save() {
