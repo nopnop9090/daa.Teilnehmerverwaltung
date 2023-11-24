@@ -258,10 +258,9 @@ public class TeilnehmerController {
 			return;
 		
 		JFileChooser fileChooser = new JFileChooser();
-		
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
         fileChooser.setFileFilter(filter);
-        
+
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             System.out.println("Selected: " + selectedFile.getAbsolutePath());
@@ -273,6 +272,15 @@ public class TeilnehmerController {
 	}
 
 	public void miClick_save() {
+		
+		/*
+		File fileToBeSaved = fileChooser.getSelectedFile();
+		if(!fileChooser.getSelectedFile().getAbsolutePath().endsWith(suffix)){
+		    fileToBeSaved = new File(fileChooser.getSelectedFile() + suffix);
+
+		}
+		*/
+		
 		// TODO Auto-generated method stub
 		
 	}
