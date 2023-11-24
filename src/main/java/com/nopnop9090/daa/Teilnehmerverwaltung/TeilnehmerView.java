@@ -256,7 +256,10 @@ public class TeilnehmerView extends JFrame implements ActionListener, ListSelect
 		
 		setLocationRelativeTo(getOwner());
 		
+		// do not allow the window to be closed
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
+		// capture window close event and handle it in controller
 		this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {

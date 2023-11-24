@@ -3,6 +3,7 @@ package com.nopnop9090.daa.Teilnehmerverwaltung;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -118,10 +119,18 @@ public class TeilnehmerController {
 	}
 	
 	void performCleanupWork() {
-		System.out.println("closing ..");
-    	model.writeToCSV("teilnehmerliste.csv");
+		if(!okayToLooseChanges()) 
+			return;	// do nothing, dont allow window to close
+		
 
-        System.exit(0);
+		// continue selected -> allow window to close
+		view.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        view.dispose();
+        
+		//System.out.println("closing ..");
+    	//model.writeToCSV("teilnehmerliste.csv");
+
+        //System.exit(0);
 	}
 	
 	public void enableEdits()
